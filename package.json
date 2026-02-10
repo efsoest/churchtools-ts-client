@@ -38,6 +38,7 @@
     "typecheck:generated": "tsc --project tsconfig.generated.json --noEmit",
     "test": "bun test --pass-with-no-tests",
     "test:watch": "bun test --watch",
+    "smoke:e2e": "bun run scripts/smoke-e2e.ts",
     "generate": "bun run scripts/generate-api.ts",
     "postprocess:generated": "bun run scripts/postprocess-generated.ts",
     "generate:all": "bun run generate && bun run postprocess:generated && bun run typecheck:generated",
