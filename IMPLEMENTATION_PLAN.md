@@ -37,8 +37,8 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 - [x] Core-Transport-Layer (Middleware, Timeout, Fehlernormalisierung) implementieren.
 - [x] `ChurchToolsClient` als handgeschriebene Facade auf den Generated Layer aufbauen.
-- [ ] Token-to-Session-Bridge (`/whoami?login_token=...`) implementieren.
-- [ ] Session-Recovery fuer `401` und `200 + { message: "Session expired!" }` implementieren.
+- [x] Token-to-Session-Bridge (`/whoami?login_token=...`) implementieren.
+- [x] Session-Recovery fuer `401` und `200 + { message: "Session expired!" }` implementieren.
 - [ ] Rate-Limit-Recovery fuer `429` mit Backoff implementieren.
 - [ ] CSRF-Flow fuer mutierende Requests und Upload-Sonderfaelle implementieren.
 - [ ] Runtime-agnostisches Cookie/Session-Konzept fuer Browser/Node/Bun definieren.
@@ -57,7 +57,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 3: Auth-/Session-Layer auf den Core-Transport aufsetzen (whoami + Session-Recovery)`
+`Phase 3: Rate-Limit-Recovery (429) auf den Core-Transport aufsetzen`
 
 ## Arbeitslog
 
@@ -71,6 +71,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Core-Transport eingefuehrt (Middleware-Hooks, Timeout via AbortController, Fehlernormalisierung) und per Bun-Tests abgesichert.
 - 2026-02-10: `ChurchToolsClient` auf Core-Transport umgestellt und API-Facade (`client.api(...)`) fuer Generated APIs eingefuehrt.
 - 2026-02-10: Core-Code (`client`, `transport`, `errors`) fuer Lesbarkeit/Wartbarkeit refaktoriert und mit zusaetzlicher JSDoc-Dokumentation versehen.
+- 2026-02-10: Auth-/Session-Layer implementiert: automatische `whoami`-Token-Bridge, `X-OnlyAuthenticated`-Header-Management und transparente Session-Recovery fuer `401` sowie `200 + "Session expired!"` (inkl. Bun-Tests).
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
