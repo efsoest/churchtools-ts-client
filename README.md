@@ -74,6 +74,13 @@ bun run build
 - `bun run format:check`: Prettier Check
 - `bun run format:write`: Prettier Write
 
+## Release (Maintainer)
+
+- Der Release-Workflow liegt in `.github/workflows/release.yml`.
+- Trigger: Push eines Git-Tags im Format `v*` (z. B. `v0.1.0`).
+- Schutz: Der Workflow bricht ab, wenn Tag und `package.json`-Version nicht zusammenpassen.
+- Voraussetzung: GitHub-Secret `NPM_TOKEN` mit Publish-Rechten fuer npm.
+
 ## Generierungs-Pipeline im Detail
 
 1. `scripts/generate-api.ts` erzeugt den OpenAPI-Layer in `src/generated/openapi`.
@@ -94,11 +101,13 @@ Wichtig:
 - Dateien unter `src/generated/openapi` werden nicht manuell editiert.
 - Fixes an generated Output gehören in `scripts/postprocess-generated.ts`.
 
-## Nutzung (im Repo / während Entwicklung)
+## Nutzung
+
+Als Package-Consumer (nach Publish):
 
 ```ts
-import { ChurchToolsClient } from './src/client';
-import { PersonApi } from './src/generated/openapi/apis/PersonApi';
+import { ChurchToolsClient } from 'churchtools-ts-client';
+import { PersonApi } from 'churchtools-ts-client/generated';
 
 const client = new ChurchToolsClient({
   baseUrl: 'https://example.church.tools',
@@ -108,6 +117,8 @@ const client = new ChurchToolsClient({
 
 const personApi = client.api(PersonApi);
 ```
+
+Im Repo waehrend der Entwicklung kannst du alternativ direkt aus `src/` importieren.
 
 ## Referenz
 

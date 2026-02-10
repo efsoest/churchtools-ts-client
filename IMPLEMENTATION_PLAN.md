@@ -61,17 +61,18 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ### Phase 5: Distribution
 
-- [ ] Package-Exports fuer ESM/CJS/Types finalisieren.
-- [ ] Release-Workflow fuer npm (Tag-basierte Publizierung) einrichten.
+- [x] Package-Exports fuer ESM/CJS/Types finalisieren.
+- [x] Release-Workflow fuer npm (Tag-basierte Publizierung) einrichten.
 - [ ] Nutzungsbeispiele und Migrationshinweise dokumentieren.
 
 ## Aktueller Schritt
 
-`Phase 5: Package-Exports fuer ESM/CJS/Types finalisieren`
+`Phase 5: Nutzungsbeispiele und Migrationshinweise dokumentieren`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
 1. CSRF-Token darf nicht an fremde Origins gesendet werden (hoch)
+
 - Finding: CSRF-Middleware injiziert Token aktuell methodenbasiert, ohne harte Origin-Pruefung.
 - Status: [x] umgesetzt
 - Behebung:
@@ -83,6 +84,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
   - Negativtest: Same-origin `POST` behaelt bestehendes Verhalten.
 
 2. Cookie-Middleware muss `credentials: 'omit'` respektieren (mittel)
+
 - Finding: Cookie-Header wird aktuell auch dann injiziert, wenn Request explizit keine Credentials senden soll.
 - Status: [x] umgesetzt
 - Behebung:
@@ -94,6 +96,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
   - Neuer Test: `Set-Cookie` wird in diesem Modus nicht gespeichert.
 
 3. Host-only-Cookie-Semantik RFC-konform abbilden (niedrig)
+
 - Finding: Cookies ohne `Domain`-Attribut koennen aktuell wie Domain-Cookies wirken.
 - Status: [x] umgesetzt
 - Behebung:
@@ -127,6 +130,8 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Security-Hardening Finding 2 umgesetzt: Cookie-Middleware respektiert `credentials: 'omit'` strikt in Pre/Post-Hook (security-relevante Code-Markierungen in `src/core/cookies.ts`) und Security-Regressionstests fuer Header-Injektion/Persistierung in `tests/core/cookies.test.ts` ergaenzt.
 - 2026-02-10: Security-Hardening Finding 3 umgesetzt: RFC-konforme host-only/domain-cookie Trennung im InMemoryCookieStore eingefuehrt (security-relevante Code-Markierungen in `src/core/cookies.ts`) und Security-Regressionstests fuer Subdomain-Verhalten in `tests/core/cookies.test.ts` ergaenzt.
 - 2026-02-10: Mock-gestuetzte Integrationstests fuer die kombinierte Core-Pipeline (`auth + cookies + csrf + 429`) in `tests/integration/core-pipeline.test.ts` ergaenzt; dabei zwei Integrationsluecken geschlossen (CSRF-Refresh trotz vorhandenem Header bei Session-Retry, Entfernen stale Cookie-Header im Auth-Retry-Pfad).
+- 2026-02-10: Package-Distribution finalisiert: stabiler Subpath-Export `churchtools-ts-client/generated` eingefuehrt, Build auf duale Entry-Points (`index`, `generated/index`) umgestellt, README-Nutzungsbeispiel auf Package-Imports aktualisiert; Build/Typecheck/Tests sind gruen.
+- 2026-02-10: npm-Release-Workflow eingerichtet (`.github/workflows/release.yml`): Tag-Trigger `v*`, Versionsabgleich Tag vs. `package.json`, Quality-Gates (format/typecheck/test/build) und anschliessendes `npm publish` via `NPM_TOKEN`.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
