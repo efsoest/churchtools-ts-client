@@ -24,7 +24,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 ### Phase 0: Architektur-Fundament
 
 - [x] Anforderungen aus `README.md` und ChurchTools-Sonderfaelle aus `legacy/old-churchtools-client.ts` extrahiert.
-- [ ] Ziel-Architektur und API-Oberflaeche schriftlich finalisieren.
+- [x] Ziel-Architektur und API-Oberflaeche schriftlich finalisieren.
 
 ### Phase 1: Projekt-Setup
 
@@ -67,7 +67,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 0: Ziel-Architektur und API-Oberflaeche schriftlich finalisieren`
+`Naechste Iteration: End-to-End-Validierung gegen echte ChurchTools-Instanz planen`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
@@ -133,6 +133,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Package-Distribution finalisiert: stabiler Subpath-Export `churchtools-ts-client/generated` eingefuehrt, Build auf duale Entry-Points (`index`, `generated/index`) umgestellt, README-Nutzungsbeispiel auf Package-Imports aktualisiert; Build/Typecheck/Tests sind gruen.
 - 2026-02-10: npm-Release-Workflow eingerichtet (`.github/workflows/release.yml`): Tag-Trigger `v*`, Versionsabgleich Tag vs. `package.json`, Quality-Gates (format/typecheck/test/build) und anschliessendes `npm publish` via `NPM_TOKEN`.
 - 2026-02-10: README um praxisnahe Consumer-Beispiele erweitert (Grundnutzung, erweiterte Konfiguration, typisierte Fehlerbehandlung) sowie Migrationshinweise vom Legacy-Client auf den neuen API-/Middleware-Ansatz dokumentiert.
+- 2026-02-10: Ziel-Architektur und oeffentliche API-Oberflaeche verbindlich in `ARCHITECTURE.md` dokumentiert und im README verlinkt.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 

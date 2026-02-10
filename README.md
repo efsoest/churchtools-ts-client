@@ -11,6 +11,7 @@ Dieses Repository trennt klar zwischen:
 - Client Layer (`src/client.ts`): öffentliche Facade
 
 Die schrittweise Umsetzung und der aktuelle Arbeitsstand liegen in [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md).
+Die verbindliche Ziel-Architektur und API-Oberflaeche ist in [ARCHITECTURE.md](./ARCHITECTURE.md) dokumentiert.
 
 ## OpenAPI-Quelle (`swagger.json`)
 
