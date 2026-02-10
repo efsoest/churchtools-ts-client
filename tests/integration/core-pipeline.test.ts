@@ -108,12 +108,22 @@ describe('integration core pipeline', () => {
 
       if (url === 'https://example.test/api/files') {
         const headers = new Headers(init?.headers);
-        fileAttempts.push({
+        const attempt: {
+          cookie: string | null;
+          csrfToken: string | null;
+          retryAttempt?: number;
+          authenticatedHeader: string | null;
+        } = {
           cookie: headers.get('cookie'),
           csrfToken: headers.get('csrf-token'),
-          retryAttempt: (init as InternalRequestInit)?.__ctSessionRetryAttempt,
           authenticatedHeader: headers.get('x-onlyauthenticated'),
-        });
+        };
+        const retryAttempt = (init as InternalRequestInit)
+          ?.__ctSessionRetryAttempt;
+        if (retryAttempt !== undefined) {
+          attempt.retryAttempt = retryAttempt;
+        }
+        fileAttempts.push(attempt);
 
         if (fileAttempts.length === 1) {
           return new Response(JSON.stringify({ error: 'Unauthorized' }), {
@@ -203,13 +213,16 @@ describe('integration core pipeline', () => {
         });
 
         if (fileAttempts.length === 1) {
-          return new Response(JSON.stringify({ message: 'Too many requests' }), {
-            status: 429,
-            headers: {
-              'content-type': 'application/json',
-              'retry-after': '0',
+          return new Response(
+            JSON.stringify({ message: 'Too many requests' }),
+            {
+              status: 429,
+              headers: {
+                'content-type': 'application/json',
+                'retry-after': '0',
+              },
             },
-          });
+          );
         }
 
         return new Response(JSON.stringify({ ok: true }), {
