@@ -52,7 +52,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 ### Phase 4: Qualitaet
 
 - [x] Unit-Tests fuer Auth-, Session- und Rate-Limit-Flow erstellen.
-- [ ] Mock-gestuetzte Integrationstests fuer Kernpfade erstellen.
+- [x] Mock-gestuetzte Integrationstests fuer Kernpfade erstellen.
 - [x] OWASP-Top-10-orientierten Security-Audit fuer handgeschriebenen Core-Code durchfuehren.
 - [x] Security-Hardening aus Audit-Findings umsetzen (CSRF-Origin-Guard, Cookie-Credentials-Respect, Host-only-Cookies).
 - [x] Security-relevante Code-Stellen mit klaren Security-Kommentaren/JSDoc markieren und Begruendung dokumentieren.
@@ -67,7 +67,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 4: Mock-gestuetzte Integrationstests fuer Kernpfade aufsetzen`
+`Phase 5: Package-Exports fuer ESM/CJS/Types finalisieren`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
@@ -126,6 +126,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Security-Hardening Finding 1 umgesetzt: CSRF-Middleware mit explizitem Same-Origin-Guard abgesichert (security-relevante Code-Markierung in `src/core/csrf.ts`) und Security-Regressionstest fuer Cross-Origin-POST in `tests/core/csrf.test.ts` ergaenzt.
 - 2026-02-10: Security-Hardening Finding 2 umgesetzt: Cookie-Middleware respektiert `credentials: 'omit'` strikt in Pre/Post-Hook (security-relevante Code-Markierungen in `src/core/cookies.ts`) und Security-Regressionstests fuer Header-Injektion/Persistierung in `tests/core/cookies.test.ts` ergaenzt.
 - 2026-02-10: Security-Hardening Finding 3 umgesetzt: RFC-konforme host-only/domain-cookie Trennung im InMemoryCookieStore eingefuehrt (security-relevante Code-Markierungen in `src/core/cookies.ts`) und Security-Regressionstests fuer Subdomain-Verhalten in `tests/core/cookies.test.ts` ergaenzt.
+- 2026-02-10: Mock-gestuetzte Integrationstests fuer die kombinierte Core-Pipeline (`auth + cookies + csrf + 429`) in `tests/integration/core-pipeline.test.ts` ergaenzt; dabei zwei Integrationsluecken geschlossen (CSRF-Refresh trotz vorhandenem Header bei Session-Retry, Entfernen stale Cookie-Header im Auth-Retry-Pfad).
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
