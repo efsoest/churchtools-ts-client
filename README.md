@@ -69,6 +69,7 @@ bun run build
 - `bun run typecheck:generated`: TypeScript-Check für generated Layer
 - `bun run test`: Tests mit integriertem `bun test`
 - `bun run test:watch`: Tests im Watch-Modus
+- `bun run smoke:e2e`: Manueller End-to-End-Smoke-Test gegen echte ChurchTools-Instanz
 - `bun run generate`: OpenAPI-Generator gegen `swagger.json`
 - `bun run postprocess:generated`: deterministische Patches für generated Code
 - `bun run generate:all`: `generate -> postprocess:generated -> typecheck:generated`
@@ -81,6 +82,39 @@ bun run build
 - Trigger: Push eines Git-Tags im Format `v*` (z. B. `v0.1.0`).
 - Schutz: Der Workflow bricht ab, wenn Tag und `package.json`-Version nicht zusammenpassen.
 - Voraussetzung: GitHub-Secret `NPM_TOKEN` mit Publish-Rechten fuer npm.
+
+## End-to-End Smoke-Test (manuell)
+
+Der Smoke-Test ist fuer reale Zielinstanzen gedacht und prueft reproduzierbar:
+
+- `whoami`-Bridge mit `login_token`
+- Session-/Cookie-Aufbau
+- `X-OnlyAuthenticated` fuer geschuetzte Requests
+- CSRF-Injektion bei mutierendem Request
+
+Pflicht-Umgebungsvariablen:
+
+- `CT_BASE_URL` (z. B. `https://example.church.tools`)
+- `CT_LOGIN_TOKEN`
+
+Optionale Umgebungsvariablen:
+
+- `CT_LOGIN_PERSON_ID`
+- `CT_TIMEOUT_MS` (Default `15000`)
+- `CT_SMOKE_MUTATION_PATH` (Default `/api/whoami`)
+- `CT_SMOKE_MUTATION_BODY` (Default `{}`)
+
+Beispiel:
+
+```bash
+CT_BASE_URL="https://example.church.tools" \
+CT_LOGIN_TOKEN="..." \
+bun run smoke:e2e
+```
+
+Hinweis: Der mutierende Smoke-Request kann bewusst mit `4xx` antworten; fuer den
+Smoke-Test ist entscheidend, dass die Middleware-Pipeline (Cookie/CSRF/Auth)
+korrekt angewendet wurde.
 
 ## Generierungs-Pipeline im Detail
 

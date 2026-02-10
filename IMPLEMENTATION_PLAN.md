@@ -65,9 +65,14 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - [x] Release-Workflow fuer npm (Tag-basierte Publizierung) einrichten.
 - [x] Nutzungsbeispiele und Migrationshinweise dokumentieren.
 
+### Phase 6: Runtime-Validierung
+
+- [x] Reproduzierbaren manuellen End-to-End-Smoke-Test fuer reale ChurchTools-Instanzen bereitstellen.
+- [ ] Smoke-Test gegen Zielinstanz ausfuehren und Ergebnisprotokoll dokumentieren.
+
 ## Aktueller Schritt
 
-`Naechste Iteration: End-to-End-Validierung gegen echte ChurchTools-Instanz planen`
+`Phase 6: Smoke-Test gegen Zielinstanz ausfuehren und Ergebnisprotokoll dokumentieren`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
@@ -134,6 +139,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: npm-Release-Workflow eingerichtet (`.github/workflows/release.yml`): Tag-Trigger `v*`, Versionsabgleich Tag vs. `package.json`, Quality-Gates (format/typecheck/test/build) und anschliessendes `npm publish` via `NPM_TOKEN`.
 - 2026-02-10: README um praxisnahe Consumer-Beispiele erweitert (Grundnutzung, erweiterte Konfiguration, typisierte Fehlerbehandlung) sowie Migrationshinweise vom Legacy-Client auf den neuen API-/Middleware-Ansatz dokumentiert.
 - 2026-02-10: Ziel-Architektur und oeffentliche API-Oberflaeche verbindlich in `ARCHITECTURE.md` dokumentiert und im README verlinkt.
+- 2026-02-10: Manuellen End-to-End-Smoke-Test (`scripts/smoke-e2e.ts`) eingefuehrt und in README dokumentiert (`bun run smoke:e2e`, erforderliche `CT_*`-Variablen, validierte Pipeline-Invarianten fuer Auth/Cookie/CSRF).
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
