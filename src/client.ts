@@ -9,6 +9,10 @@ import {
   type ChurchToolsLoginTokenConfig,
   type ChurchToolsSessionAuthConfig,
 } from './core/auth';
+import {
+  createRateLimitMiddleware,
+  type ChurchToolsRateLimitOptions,
+} from './core/rate-limit';
 
 /**
  * Primitive value supported by query parameter serialization.
@@ -110,6 +114,12 @@ export type ChurchToolsClientConfig = {
    * Adds `with_session=true` to `/whoami` to force backend session creation.
    */
   forceSession?: boolean;
+  /**
+   * Configuration for automatic 429 backoff + retry.
+   *
+   * Use `false` to disable rate-limit retries completely.
+   */
+  rateLimit?: ChurchToolsRateLimitOptions | false;
   /**
    * Transport middleware hooks executed around every request.
    */
@@ -224,6 +234,12 @@ const createClientFetch = (
   const sessionAuthMiddleware = createSessionAuthMiddleware(sessionAuthConfig);
   if (sessionAuthMiddleware) {
     middleware.push(sessionAuthMiddleware);
+  }
+  if (config.rateLimit !== false) {
+    const rateLimitMiddleware = createRateLimitMiddleware(config.rateLimit);
+    if (rateLimitMiddleware) {
+      middleware.push(rateLimitMiddleware);
+    }
   }
   if (config.middleware) {
     middleware.push(...config.middleware);

@@ -3,6 +3,13 @@ export type {
   ChurchToolsClientConfig,
   ChurchToolsApiConstructor,
 } from './client';
+export { createSessionAuthMiddleware } from './core/auth';
+export type {
+  ChurchToolsLoginTokenConfig,
+  ChurchToolsSessionAuthConfig,
+} from './core/auth';
+export { createRateLimitMiddleware } from './core/rate-limit';
+export type { ChurchToolsRateLimitOptions } from './core/rate-limit';
 export {
   ChurchToolsClientError,
   ChurchToolsHttpError,
