@@ -17,6 +17,36 @@ Entwicklung einer modernen, typsicheren TypeScript-Library zur Interaktion mit d
 - **Bundling:** `tsup` (für ESM, CJS und d.ts Exporte).
 - **Testing:** `Vitest`.
 
+### 2.1 Generierungs-Pipeline (Ist-Stand)
+
+Die API-Generierung läuft reproduzierbar über:
+
+1. `bun run generate`  
+   Generiert OpenAPI-Code nach `src/generated/openapi`.
+2. `bun run postprocess:generated`  
+   Wendet deterministische Korrekturen auf den generierten Code an.
+3. `bun run typecheck:generated`  
+   Prüft den generierten Layer mit eigener TS-Konfiguration.
+
+Komfortbefehl:
+
+- `bun run generate:all` = `generate -> postprocess:generated -> typecheck:generated`
+
+## 2.2 Überblick: Was das Postprocessing macht
+
+Das Script `scripts/postprocess-generated.ts` korrigiert aktuell bekannte Generator-Probleme für die ChurchTools-Spec:
+
+1. **Fehlendes `Null`-Model ergänzen:** Erzeugt `src/generated/openapi/models/Null.ts` und ergänzt den Export in `src/generated/openapi/models/index.ts`.
+2. **Konfliktfreie API-Barrel-Exports:** Schreibt `src/generated/openapi/apis/index.ts` neu und exportiert nur API-Klassen statt `export *`, um Namenskollisionen zu vermeiden.
+3. **Ungültige `objectToJSON(...)`-Verwendungen ersetzen:** Patcht fehlerhafte FormData-Serialisierung in generierten API-Dateien.
+4. **Fehlende `instanceOf...`-Guards für Alias-Modelle ergänzen:** Fügt Guards nach, wenn der Generator sie nicht emittiert.
+5. **Doppelte Date-Serialisierungsblöcke bereinigen:** Vereinheitlicht fehlerhafte doppelte `instanceof Date`-Pfade.
+
+Wichtig:
+
+- Der Ordner `src/generated/openapi` bleibt weiterhin „generated code“.
+- Manuelle Änderungen in diesem Ordner sind nicht vorgesehen; Fixes gehören in das Postprocessing-Skript.
+
 ## 3. Architektur-Design
 
 ### A. Layer-Struktur
@@ -45,7 +75,7 @@ Basierend auf der Analyse des offiziellen Clients muss die Library folgende Logi
 ### Phase 2: OpenAPI-Generierung
 
 - [ ] Hinterlege die aktuelle `swagger.json` im Root.
-- [ ] Erstelle ein Script `generate-api.sh`, das den Generator mit folgenden Parametern aufruft:
+- [ ] Erstelle ein Script `scripts/generate-api.ts`, das den Generator mit folgenden Parametern aufruft:
 - Generator: `typescript-fetch`
 - Additional Properties: `typescriptThreePlus=true`, `useSingleRequestParameter=true`.
 

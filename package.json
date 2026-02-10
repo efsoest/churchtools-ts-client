@@ -20,9 +20,12 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
+    "typecheck:generated": "tsc --project tsconfig.generated.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
     "generate": "bun run scripts/generate-api.ts",
+    "postprocess:generated": "bun run scripts/postprocess-generated.ts",
+    "generate:all": "bun run generate && bun run postprocess:generated && bun run typecheck:generated",
     "format:check": "prettier --check .",
     "format:write": "prettier --write ."
   },
