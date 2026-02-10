@@ -100,6 +100,74 @@ describe('core cookie middleware', () => {
     });
   });
 
+  test('does not inject cookies when credentials are explicitly omitted', async () => {
+    const store = new InMemoryCookieStore();
+    await store.setCookies('https://example.test/api/whoami', [
+      'ct_session=stored-cookie; Path=/; HttpOnly',
+    ]);
+
+    const fetchMock: FetchLike = async (_input, init) => {
+      const headers = new Headers(init?.headers);
+      expect(headers.get('cookie')).toBeNull();
+      return new Response('ok', { status: 200 });
+    };
+
+    const middleware = createCookieSessionMiddleware({
+      baseUrl: 'https://example.test',
+      options: {
+        mode: 'manual',
+        store,
+      },
+    });
+
+    const transportFetch = createTransportFetch({
+      fetchApi: fetchMock,
+      timeoutMs: 300,
+      middleware: [middleware!],
+    });
+
+    await transportFetch('https://example.test/api/persons', {
+      method: 'GET',
+      credentials: 'omit',
+    });
+  });
+
+  test('does not persist set-cookie updates when credentials are omitted', async () => {
+    const store = new InMemoryCookieStore();
+
+    const fetchMock: FetchLike = async () =>
+      new Response('ok', {
+        status: 200,
+        headers: {
+          'set-cookie': 'ct_session=server-cookie; Path=/; HttpOnly',
+        },
+      });
+
+    const middleware = createCookieSessionMiddleware({
+      baseUrl: 'https://example.test',
+      options: {
+        mode: 'manual',
+        store,
+      },
+    });
+
+    const transportFetch = createTransportFetch({
+      fetchApi: fetchMock,
+      timeoutMs: 300,
+      middleware: [middleware!],
+    });
+
+    await transportFetch('https://example.test/api/persons', {
+      method: 'GET',
+      credentials: 'omit',
+    });
+
+    const cookieHeader = await store.getCookieHeader(
+      'https://example.test/api/persons',
+    );
+    expect(cookieHeader).toBeUndefined();
+  });
+
   test('works with auth whoami bridge and replays session cookie', async () => {
     let whoamiCalls = 0;
 

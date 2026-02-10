@@ -127,6 +127,14 @@ export const createCookieSessionMiddleware = (config: {
       if (!requestUrl || requestUrl.origin !== baseUrl.origin) {
         return;
       }
+      /**
+       * Security-critical guard:
+       * `credentials: 'omit'` is an explicit caller intent to avoid ambient
+       * authentication state. The middleware must not attach session cookies.
+       */
+      if (context.request.init.credentials === 'omit') {
+        return;
+      }
 
       const headers = new Headers(context.request.init.headers);
       if (headers.has('cookie')) {
@@ -150,6 +158,14 @@ export const createCookieSessionMiddleware = (config: {
     post: async (context) => {
       const requestUrl = toAbsoluteUrl(context.request.url, baseUrl);
       if (!requestUrl || requestUrl.origin !== baseUrl.origin) {
+        return;
+      }
+      /**
+       * Security-critical guard:
+       * when callers opt out of credentials for a request, the middleware should
+       * not persist `Set-Cookie` as a side effect of that request.
+       */
+      if (context.request.init.credentials === 'omit') {
         return;
       }
 
