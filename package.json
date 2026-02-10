@@ -12,10 +12,25 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./generated": {
+      "types": "./src/generated/openapi/index.ts",
+      "import": "./dist/generated/index.js",
+      "require": "./dist/generated/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "typesVersions": {
+    "*": {
+      "generated": [
+        "src/generated/openapi/index.ts"
+      ]
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "src/generated/openapi"
   ],
   "scripts": {
     "build": "tsup",
