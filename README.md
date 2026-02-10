@@ -1,38 +1,84 @@
-# 🚀 Projekt-Spezifikation: churchtools-ts-client
+# churchtools-ts-client
 
-## 1. Vision & Zielsetzung
+Typsicherer inoffizieller TypeScript-Client für die [ChurchTools API](https://demo.church.tools/api) auf Basis von `fetch` und OpenAPI-Codegenerierung.
 
-Entwicklung einer modernen, typsicheren TypeScript-Library zur Interaktion mit der ChurchTools API.
+## Projektstatus
 
-- **Framework-Agnostisch:** Läuft in Bun, Node.js, Deno und im Browser.
-- **Typsicher:** Automatisierte Generierung der Datenmodelle aus der `swagger.json`.
-- **Standard-basiert:** Nutzt die native `fetch` API (kein Axios).
-- **Open-Source Ready:** Klare Struktur, Dokumentation und einfache Erweiterbarkeit.
+Dieses Repository trennt klar zwischen:
 
-## 2. Technischer Stack
+- Generated Layer (`src/generated/openapi`): aus `swagger.json` erzeugter Code
+- Core Layer (`src/core`): eigene Middleware und Laufzeitlogik
+- Client Layer (`src/client.ts`): öffentliche Facade
 
-- **Runtime/Tooling:** [Bun](https://bun.sh) für Development, Testing und Scripts.
-- **Sprache:** TypeScript (Strict Mode).
-- **Code-Generierung:** `@openapitools/openapi-generator-cli` mit dem `typescript-fetch` Generator.
-- **Bundling:** `tsup` (für ESM, CJS und d.ts Exporte).
-- **Testing:** integriertes `bun test`.
+Die schrittweise Umsetzung und der aktuelle Arbeitsstand liegen in [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md).
 
-### 2.1 Generierungs-Pipeline (Ist-Stand)
+## OpenAPI-Quelle (`swagger.json`)
 
-Die API-Generierung läuft reproduzierbar über:
+Die im Repo eingecheckte `swagger.json` stammt von:
 
-1. `bun run generate`  
-   Generiert OpenAPI-Code nach `src/generated/openapi`.
-2. `bun run postprocess:generated`  
-   Wendet deterministische Korrekturen auf den generierten Code an.
-3. `bun run typecheck:generated`  
-   Prüft den generierten Layer mit eigener TS-Konfiguration.
+- [https://demo.church.tools/system/runtime/swagger/openapi.json](https://demo.church.tools/system/runtime/swagger/openapi.json)
 
-Komfortbefehl:
+Beispiel zum Aktualisieren der lokalen Spec:
 
-- `bun run generate:all` = `generate -> postprocess:generated -> typecheck:generated`
+```bash
+curl -L "https://demo.church.tools/system/runtime/swagger/openapi.json" -o swagger.json
+```
 
-## 2.2 Überblick: Was das Postprocessing macht
+Hinweis: Nach einer neuen Spec immer die komplette Generierungs-Pipeline laufen lassen (`bun run generate:all`).
+
+## Was der Client aktuell abdeckt
+
+- Timeout-Handling pro Request (`AbortController`)
+- Normalisierte Fehlertypen (`ChurchToolsHttpError`, `ChurchToolsTimeoutError`, `ChurchToolsRequestError`)
+- Session-Auth mit `whoami`-Bridge (`login_token`) inkl. Recovery bei:
+  - `401`
+  - `200` mit `{ "message": "Session expired!" }`
+- Automatischer `X-OnlyAuthenticated`-Header
+- Rate-Limit-Recovery für `429` (`Retry-After` + konfigurierbares Backoff)
+- CSRF-Handling für mutierende Requests via `/api/csrftoken`
+
+## Entwickler-Workflow
+
+Voraussetzung: [Bun](https://bun.sh)
+
+```bash
+bun install
+```
+
+Typischer Ablauf bei API- oder Core-Änderungen:
+
+```bash
+# 1) OpenAPI generieren + postprocessen + generated typecheck
+bun run generate:all
+
+# 2) Handgeschriebenen Code pruefen
+bun run format:check
+bun run typecheck
+bun run test
+
+# 3) Build der Library (ESM, CJS, d.ts)
+bun run build
+```
+
+## Skripte
+
+- `bun run build`: Library-Build mit `tsup`
+- `bun run typecheck`: TypeScript-Check für handgeschriebenen Layer
+- `bun run typecheck:generated`: TypeScript-Check für generated Layer
+- `bun run test`: Tests mit integriertem `bun test`
+- `bun run test:watch`: Tests im Watch-Modus
+- `bun run generate`: OpenAPI-Generator gegen `swagger.json`
+- `bun run postprocess:generated`: deterministische Patches für generated Code
+- `bun run generate:all`: `generate -> postprocess:generated -> typecheck:generated`
+- `bun run format:check`: Prettier Check
+- `bun run format:write`: Prettier Write
+
+## Generierungs-Pipeline im Detail
+
+1. `scripts/generate-api.ts` erzeugt den OpenAPI-Layer in `src/generated/openapi`.
+2. `scripts/postprocess-generated.ts` behebt bekannte Generator-Inkompatibilitaeten.
+
+### Überblick: Was das Postprocessing macht
 
 Das Script `scripts/postprocess-generated.ts` korrigiert aktuell bekannte Generator-Probleme für die ChurchTools-Spec:
 
@@ -44,76 +90,28 @@ Das Script `scripts/postprocess-generated.ts` korrigiert aktuell bekannte Genera
 
 Wichtig:
 
-- Der Ordner `src/generated/openapi` bleibt weiterhin „generated code“.
-- Manuelle Änderungen in diesem Ordner sind nicht vorgesehen; Fixes gehören in das Postprocessing-Skript.
+- Dateien unter `src/generated/openapi` werden nicht manuell editiert.
+- Fixes an generated Output gehören in `scripts/postprocess-generated.ts`.
 
-## 3. Architektur-Design
+## Nutzung (im Repo / während Entwicklung)
 
-### A. Layer-Struktur
+```ts
+import { ChurchToolsClient } from './src/client';
+import { PersonApi } from './src/generated/openapi/apis/PersonApi';
 
-1. **Generated Layer (`/src/generated`):** Vollständig automatischer Code aus der OpenAPI-Spec. Dieser wird niemals manuell editiert.
-2. **Core Layer (`/src/core`):** Enthält die Authentifizierungs-Logik, Middleware/Interceptors und die Basis-Konfiguration.
-3. **Client Layer (`/src/client.ts`):** Die öffentliche API der Library, die den generierten Code mit der Auth-Logik verbindet.
+const client = new ChurchToolsClient({
+  baseUrl: 'https://example.church.tools',
+  loginToken: process.env.CT_LOGIN_TOKEN,
+  forceSession: true,
+});
 
-### B. Authentifizierungs-Konzept
+const personApi = client.api(PersonApi);
+```
 
-Basierend auf der Analyse des offiziellen Clients muss die Library folgende Logik implementieren:
+## Referenz
 
-- **Token-to-Session Bridge:** Automatischer Aufruf von `/whoami?login_token=...`, um eine Session zu initiieren.
-- **Header-Management:** Automatisches Setzen des `X-OnlyAuthenticated: 1` Headers.
-- **Session-Recovery:** Interceptor, der auf `401 Unauthorized` reagiert ODER auf `200 OK` mit dem JSON-Inhalt `{ message: 'Session expired!' }`.
+Funktionale Referenz für ChurchTools-Spezifika war der offizielle JavaScript Client in https://github.com/churchtools/churchtools-js-client.
 
-### C. Aktueller Core-Stand
+## Disclaimer
 
-Bereits implementiert ist ein runtime-agnostischer Core-Transport-Layer (`src/core/transport.ts`) mit:
-
-1. **Middleware-Hooks:** `pre`, `post`, `onError`.
-2. **Timeout-Steuerung:** pro Request über `AbortController`.
-3. **Fehlernormalisierung:** eigene Fehlertypen (`ChurchToolsHttpError`, `ChurchToolsTimeoutError`, `ChurchToolsRequestError`).
-4. **Auth-/Session-Middleware:** automatische `/whoami`-Token-Bridge, Header `X-OnlyAuthenticated: 1` und Session-Recovery für `401` plus `200` mit `{ message: "Session expired!" }`.
-5. **Rate-Limit-Middleware:** automatische Recovery bei `429` mit `Retry-After`-Support und konfigurierbarem Backoff.
-6. **CSRF-Middleware:** automatische Token-Beschaffung über `/api/csrftoken` und Header-Injektion für mutierende Requests.
-
-Der `ChurchToolsClient` nutzt diesen Transport bereits als Basis und kann damit generierte API-Klassen über `client.api(...)` instanziieren.
-
-## 4. Implementierungs-Phasen (TODO-Liste)
-
-### Phase 1: Projekt-Setup
-
-- [ ] Initialisiere Repository mit `bun init`.
-- [ ] Konfiguriere `tsconfig.json` für moderne ESM-Ausgabe.
-- [ ] Setup `tsup` für das Packaging der Library.
-- [ ] Erstelle Ordnerstruktur: `src/generated`, `src/core`, `src/utils`.
-
-### Phase 2: OpenAPI-Generierung
-
-- [ ] Hinterlege die aktuelle `swagger.json` im Root.
-- [ ] Erstelle ein Script `scripts/generate-api.ts`, das den Generator mit folgenden Parametern aufruft:
-- Generator: `typescript-fetch`
-- Additional Properties: `typescriptThreePlus=true`, `useSingleRequestParameter=true`.
-
-- [ ] Validiere, dass die generierten Interfaces alle ChurchTools-Modelle (Events, Personen etc.) enthalten.
-
-### Phase 3: Der "Smart" Client (Core)
-
-- [ ] **AuthInterceptor:** Implementiere eine Logik, die Anfragen abfängt und ggf. den Token-Login durchführt.
-- [ ] **Rate-Limiting:** Implementiere einen Backoff-Mechanismus bei Status `429` (Rate Limit reached), wie im offiziellen Client vorgesehen.
-- [ ] **Agnostic Cookie Handling:** Da `fetch` im Browser Cookies automatisch handhabt, in Bun/Node aber nicht, muss der Client die Möglichkeit bieten, einen externen `cookie-jar` zu injizieren oder Header manuell zu verwalten.
-
-### Phase 4: Testing & Qualität
-
-- [ ] Erstelle Mock-Tests für den Login-Flow.
-- [ ] Teste die Library in einer Bun-Umgebung und simuliere eine Browser-Umgebung.
-
-## 5. Spezielle Logik-Anforderungen (Referenz aus offiziellen Quellen)
-
-Die KI muss beim Erstellen der Logik folgende Punkte aus `churchtoolsClient.ts` beachten:
-
-- **CSRF-Handling:** Bei Datei-Uploads (POST/PUT) muss vorab ein CSRF-Token von `/csrftoken` geholt werden.
-- **Status-Handling:** ChurchTools sendet manchmal Fehler innerhalb von `200 OK` Antworten (z. B. "Session expired!"). Der Client muss den Body scannen.
-- **Abbruch-Signale:** Unterstützung von `AbortController` für Timeouts (Default 15s).
-
-## 6. Veröffentlichung
-
-- [ ] Konfiguriere `package.json` mit `exports`, `types` und `files`.
-- [ ] Erstelle eine GitHub Action für automatische NPM-Veröffentlichung bei neuen Tags.
+Der Code hier steht in keinerlei offizieller Verbindung zu Churchtools. Ein Großteil des Codes und der Dokumentation wurde unter Zuhilfenahme von KI generiert. Auch wenn der KI-generierte Code nach bestem Wissen und Gewissen geprüft wurde, kann es durchaus sein, dass die Implementierung Bugs oder sogar Sicherheitslücken enthält. Verwendung bitte auf eigene Gefahr :)
