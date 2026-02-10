@@ -30,7 +30,6 @@ describe('core auth middleware', () => {
 
     const authMiddleware = createSessionAuthMiddleware({
       baseUrl: 'https://example.test',
-      fetchApi: fetchMock,
       timeoutMs: 200,
       loginToken: 'token-123',
       loginPersonId: 42,
@@ -87,7 +86,6 @@ describe('core auth middleware', () => {
 
     const authMiddleware = createSessionAuthMiddleware({
       baseUrl: 'https://example.test',
-      fetchApi: fetchMock,
       timeoutMs: 200,
       loginToken: 'token-123',
     });
@@ -138,7 +136,6 @@ describe('core auth middleware', () => {
 
     const authMiddleware = createSessionAuthMiddleware({
       baseUrl: 'https://example.test',
-      fetchApi: fetchMock,
       timeoutMs: 200,
       loginToken: 'token-123',
     });

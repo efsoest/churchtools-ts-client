@@ -22,10 +22,6 @@ export type ChurchToolsSessionAuthConfig = {
    */
   baseUrl: string;
   /**
-   * Unwrapped fetch implementation used for direct `/whoami` login calls.
-   */
-  fetchApi: FetchLike;
-  /**
    * Timeout for middleware-initiated login requests.
    */
   timeoutMs: number;
@@ -86,7 +82,7 @@ export const createSessionAuthMiddleware = (
     return resolved || undefined;
   };
 
-  const loginViaWhoami = async (): Promise<boolean> => {
+  const loginViaWhoami = async (fetchApi: FetchLike): Promise<boolean> => {
     const loginToken = await resolveLoginToken();
     if (!loginToken) {
       return false;
@@ -121,7 +117,7 @@ export const createSessionAuthMiddleware = (
     }
 
     try {
-      const response = await config.fetchApi(
+      const response = await fetchApi(
         `${whoamiEndpoint}?${queryParams.toString()}`,
         init,
       );
@@ -142,9 +138,9 @@ export const createSessionAuthMiddleware = (
    * Deduplicates concurrent login attempts so parallel requests share one
    * `/whoami` call and converge on the same session state.
    */
-  const refreshSession = async (): Promise<boolean> => {
+  const refreshSession = async (fetchApi: FetchLike): Promise<boolean> => {
     if (!loginInFlight) {
-      loginInFlight = loginViaWhoami().finally(() => {
+      loginInFlight = loginViaWhoami(fetchApi).finally(() => {
         loginInFlight = undefined;
       });
     }
@@ -175,7 +171,7 @@ export const createSessionAuthMiddleware = (
       return undefined;
     }
 
-    const refreshed = await refreshSession();
+    const refreshed = await refreshSession(context.fetch);
     if (!refreshed) {
       return undefined;
     }
@@ -199,7 +195,7 @@ export const createSessionAuthMiddleware = (
           initialBridgeAttempted = true;
           // We intentionally do not fail the business request when initial login
           // bootstrap fails. Recovery is handled on unauthorized responses.
-          await refreshSession();
+          await refreshSession(context.fetch);
         }
         return setAuthenticatedHeader(context.request);
       }

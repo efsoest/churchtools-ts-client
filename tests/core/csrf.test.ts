@@ -25,7 +25,6 @@ describe('core csrf middleware', () => {
 
     const csrfMiddleware = createCsrfMiddleware({
       baseUrl: 'https://example.test',
-      fetchApi: fetchMock,
       timeoutMs: 200,
     });
 
@@ -57,7 +56,6 @@ describe('core csrf middleware', () => {
 
     const csrfMiddleware = createCsrfMiddleware({
       baseUrl: 'https://example.test',
-      fetchApi: fetchMock,
       timeoutMs: 200,
     });
 
@@ -104,7 +102,6 @@ describe('core csrf middleware', () => {
 
     const csrfMiddleware = createCsrfMiddleware({
       baseUrl: 'https://example.test',
-      fetchApi: fetchMock,
       timeoutMs: 200,
     });
     const transportFetch = createTransportFetch({

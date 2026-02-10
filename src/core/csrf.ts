@@ -31,7 +31,6 @@ export type ChurchToolsCsrfOptions = {
  */
 export const createCsrfMiddleware = (config: {
   baseUrl: string;
-  fetchApi: FetchLike;
   timeoutMs: number;
   credentials?: RequestCredentials;
   options?: ChurchToolsCsrfOptions;
@@ -48,7 +47,9 @@ export const createCsrfMiddleware = (config: {
   let cachedToken: string | undefined;
   let tokenInFlight: Promise<string | undefined> | undefined;
 
-  const fetchCsrfToken = async (): Promise<string | undefined> => {
+  const fetchCsrfToken = async (
+    fetchApi: FetchLike,
+  ): Promise<string | undefined> => {
     const timeoutController = new AbortController();
     const timeoutId = setTimeout(
       () => timeoutController.abort(),
@@ -67,7 +68,7 @@ export const createCsrfMiddleware = (config: {
     }
 
     try {
-      const response = await config.fetchApi(csrftokenEndpoint, init);
+      const response = await fetchApi(csrftokenEndpoint, init);
       if (response.status < 200 || response.status >= 300) {
         return undefined;
       }
@@ -81,13 +82,14 @@ export const createCsrfMiddleware = (config: {
 
   const resolveToken = async (
     forceRefresh: boolean,
+    fetchApi: FetchLike,
   ): Promise<string | undefined> => {
     if (!forceRefresh && cachedToken) {
       return cachedToken;
     }
 
     if (!tokenInFlight) {
-      tokenInFlight = fetchCsrfToken()
+      tokenInFlight = fetchCsrfToken(fetchApi)
         .then((token) => {
           cachedToken = token;
           return token;
@@ -116,7 +118,7 @@ export const createCsrfMiddleware = (config: {
       }
 
       const forceRefresh = getSessionRetryAttempt(context.request.init) > 0;
-      const token = await resolveToken(forceRefresh);
+      const token = await resolveToken(forceRefresh, context.fetch);
       if (!token) {
         return context.request;
       }

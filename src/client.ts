@@ -9,6 +9,10 @@ import {
   type ChurchToolsLoginTokenConfig,
   type ChurchToolsSessionAuthConfig,
 } from './core/auth';
+import {
+  createCookieSessionMiddleware,
+  type ChurchToolsCookieOptions,
+} from './core/cookies';
 import { createCsrfMiddleware, type ChurchToolsCsrfOptions } from './core/csrf';
 import {
   createRateLimitMiddleware,
@@ -116,6 +120,12 @@ export type ChurchToolsClientConfig = {
    */
   forceSession?: boolean;
   /**
+   * Runtime-agnostic cookie/session handling.
+   *
+   * Use `false` to disable cookie middleware.
+   */
+  cookies?: ChurchToolsCookieOptions | false;
+  /**
    * Configuration for automatic CSRF token handling on mutating requests.
    *
    * Use `false` to disable automatic CSRF handling.
@@ -222,7 +232,6 @@ const createClientFetch = (
 
   const sessionAuthConfig: ChurchToolsSessionAuthConfig = {
     baseUrl: params.baseUrl,
-    fetchApi,
     timeoutMs: params.timeoutMs,
   };
   if (config.loginToken !== undefined) {
@@ -242,16 +251,30 @@ const createClientFetch = (
   if (sessionAuthMiddleware) {
     middleware.push(sessionAuthMiddleware);
   }
+  if (config.cookies !== false) {
+    const cookieConfig: {
+      baseUrl: string;
+      options?: ChurchToolsCookieOptions;
+    } = {
+      baseUrl: params.baseUrl,
+    };
+    if (config.cookies !== undefined) {
+      cookieConfig.options = config.cookies;
+    }
+
+    const cookieMiddleware = createCookieSessionMiddleware(cookieConfig);
+    if (cookieMiddleware) {
+      middleware.push(cookieMiddleware);
+    }
+  }
   if (config.csrf !== false) {
     const csrfConfig: {
       baseUrl: string;
-      fetchApi: FetchLike;
       timeoutMs: number;
       credentials?: RequestCredentials;
       options?: ChurchToolsCsrfOptions;
     } = {
       baseUrl: params.baseUrl,
-      fetchApi,
       timeoutMs: params.timeoutMs,
     };
     if (config.credentials !== undefined) {
