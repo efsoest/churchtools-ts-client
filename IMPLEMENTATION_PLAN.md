@@ -70,6 +70,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Test-Setup von `Vitest` auf integriertes `bun test` umgestellt, um Abhaengigkeiten zu reduzieren.
 - 2026-02-10: Core-Transport eingefuehrt (Middleware-Hooks, Timeout via AbortController, Fehlernormalisierung) und per Bun-Tests abgesichert.
 - 2026-02-10: `ChurchToolsClient` auf Core-Transport umgestellt und API-Facade (`client.api(...)`) fuer Generated APIs eingefuehrt.
+- 2026-02-10: Core-Code (`client`, `transport`, `errors`) fuer Lesbarkeit/Wartbarkeit refaktoriert und mit zusaetzlicher JSDoc-Dokumentation versehen.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
