@@ -127,12 +127,12 @@ export const createCsrfMiddleware = (config: {
         return context.request;
       }
 
+      const forceRefresh = getSessionRetryAttempt(context.request.init) > 0;
       const headers = new Headers(context.request.init.headers);
-      if (headers.has(headerName)) {
+      if (headers.has(headerName) && !forceRefresh) {
         return context.request;
       }
 
-      const forceRefresh = getSessionRetryAttempt(context.request.init) > 0;
       const token = await resolveToken(forceRefresh, context.fetch);
       if (!token) {
         return context.request;

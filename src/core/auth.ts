@@ -181,7 +181,13 @@ export const createSessionAuthMiddleware = (
       __ctSessionRetryAttempt: retryAttempt + 1,
     };
     if (context.request.init.headers) {
-      retryInit.headers = new Headers(context.request.init.headers);
+      const retryHeaders = new Headers(context.request.init.headers);
+      /**
+       * Let the cookie middleware rehydrate the latest session cookie after a
+       * successful refresh. Reusing the stale header would pin the old session.
+       */
+      retryHeaders.delete('cookie');
+      retryInit.headers = retryHeaders;
     }
     return context.fetch(context.request.url, retryInit);
   };
