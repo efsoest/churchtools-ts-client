@@ -4,6 +4,11 @@ import {
   type ChurchToolsTransportConfig,
   type FetchLike,
 } from './core/transport';
+import {
+  createSessionAuthMiddleware,
+  type ChurchToolsLoginTokenConfig,
+  type ChurchToolsSessionAuthConfig,
+} from './core/auth';
 
 /**
  * Primitive value supported by query parameter serialization.
@@ -94,6 +99,18 @@ export type ChurchToolsClientConfig = {
    */
   accessToken?: AccessTokenConfig;
   /**
+   * Optional ChurchTools login token used for `/whoami` session login.
+   */
+  loginToken?: ChurchToolsLoginTokenConfig;
+  /**
+   * Optional ChurchTools person id forwarded to `/whoami`.
+   */
+  loginPersonId?: number;
+  /**
+   * Adds `with_session=true` to `/whoami` to force backend session creation.
+   */
+  forceSession?: boolean;
+  /**
    * Transport middleware hooks executed around every request.
    */
   middleware?: ChurchToolsMiddleware[];
@@ -127,7 +144,10 @@ export class ChurchToolsClient {
 
     this.#baseUrl = config.baseUrl.replace(/\/+$/, '');
     this.#timeoutMs = config.timeoutMs ?? 15_000;
-    this.#fetch = createClientFetch(config, this.#timeoutMs);
+    this.#fetch = createClientFetch(config, {
+      baseUrl: this.#baseUrl,
+      timeoutMs: this.#timeoutMs,
+    });
     this.#configuration = createRuntimeConfiguration(config, {
       baseUrl: this.#baseUrl,
       fetchApi: this.#fetch,
@@ -175,15 +195,45 @@ export class ChurchToolsClient {
 
 const createClientFetch = (
   config: ChurchToolsClientConfig,
-  timeoutMs: number,
+  params: {
+    baseUrl: string;
+    timeoutMs: number;
+  },
 ): FetchLike => {
-  const transportConfig: ChurchToolsTransportConfig = {
-    fetchApi: config.fetch ?? fetch,
-    timeoutMs,
+  const fetchApi = config.fetch ?? fetch;
+  const middleware: ChurchToolsMiddleware[] = [];
+
+  const sessionAuthConfig: ChurchToolsSessionAuthConfig = {
+    baseUrl: params.baseUrl,
+    fetchApi,
+    timeoutMs: params.timeoutMs,
   };
-  if (config.middleware) {
-    transportConfig.middleware = config.middleware;
+  if (config.loginToken !== undefined) {
+    sessionAuthConfig.loginToken = config.loginToken;
   }
+  if (config.loginPersonId !== undefined) {
+    sessionAuthConfig.loginPersonId = config.loginPersonId;
+  }
+  if (config.forceSession !== undefined) {
+    sessionAuthConfig.forceSession = config.forceSession;
+  }
+  if (config.credentials !== undefined) {
+    sessionAuthConfig.credentials = config.credentials;
+  }
+
+  const sessionAuthMiddleware = createSessionAuthMiddleware(sessionAuthConfig);
+  if (sessionAuthMiddleware) {
+    middleware.push(sessionAuthMiddleware);
+  }
+  if (config.middleware) {
+    middleware.push(...config.middleware);
+  }
+
+  const transportConfig: ChurchToolsTransportConfig = {
+    fetchApi,
+    timeoutMs: params.timeoutMs,
+    middleware,
+  };
   return createTransportFetch(transportConfig);
 };
 
