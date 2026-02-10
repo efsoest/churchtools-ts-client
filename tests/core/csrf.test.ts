@@ -72,6 +72,40 @@ describe('core csrf middleware', () => {
     expect(calls).toEqual(['https://example.test/api/persons']);
   });
 
+  test('does not load or inject csrf token for cross-origin mutating requests', async () => {
+    const calls: { url: string; init: RequestInit | undefined }[] = [];
+    const fetchMock: FetchLike = async (input, init) => {
+      const url = typeof input === 'string' ? input : input.toString();
+      calls.push({ url, init });
+
+      const headers = new Headers(init?.headers);
+      expect(headers.get('CSRF-Token')).toBeNull();
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
+    };
+
+    const csrfMiddleware = createCsrfMiddleware({
+      baseUrl: 'https://example.test',
+      timeoutMs: 200,
+    });
+
+    const transportFetch = createTransportFetch({
+      fetchApi: fetchMock,
+      timeoutMs: 200,
+      middleware: [csrfMiddleware],
+    });
+
+    await transportFetch('https://evil.test/api/files', {
+      method: 'POST',
+      body: JSON.stringify({ id: 1 }),
+    });
+
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.url).toBe('https://evil.test/api/files');
+  });
+
   test('refreshes csrf token after session-retry attempt', async () => {
     const issuedTokens = ['csrf-token-1', 'csrf-token-2'];
     let tokenIndex = 0;

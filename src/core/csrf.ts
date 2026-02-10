@@ -36,6 +36,7 @@ export const createCsrfMiddleware = (config: {
   options?: ChurchToolsCsrfOptions;
 }): ChurchToolsMiddleware => {
   const normalizedBaseUrl = config.baseUrl.replace(/\/+$/, '');
+  const baseUrl = new URL(normalizedBaseUrl);
   const csrftokenEndpoint = `${normalizedBaseUrl}/api/csrftoken`;
   const methods = new Set(
     (config.options?.methods ?? DEFAULT_MUTATING_METHODS).map((method) =>
@@ -103,7 +104,21 @@ export const createCsrfMiddleware = (config: {
 
   return {
     pre: async (context) => {
-      if (isCsrfTokenRequest(context.request.url, csrftokenEndpoint)) {
+      const requestUrl = toAbsoluteUrl(context.request.url, baseUrl);
+      if (!requestUrl) {
+        return context.request;
+      }
+
+      if (isCsrfTokenRequest(requestUrl.toString(), csrftokenEndpoint)) {
+        return context.request;
+      }
+
+      /**
+       * Security-critical guard:
+       * CSRF tokens are session-bound secrets and must never be attached to
+       * cross-origin requests.
+       */
+      if (requestUrl.origin !== baseUrl.origin) {
         return context.request;
       }
 
@@ -133,6 +148,14 @@ export const createCsrfMiddleware = (config: {
       };
     },
   };
+};
+
+const toAbsoluteUrl = (requestUrl: string, baseUrl: URL): URL | undefined => {
+  try {
+    return new URL(requestUrl, baseUrl);
+  } catch {
+    return undefined;
+  }
 };
 
 const isCsrfTokenRequest = (
