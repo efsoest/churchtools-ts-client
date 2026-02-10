@@ -79,9 +79,15 @@ bun run build
 ## Release (Maintainer)
 
 - Der Release-Workflow liegt in `.github/workflows/release.yml`.
-- Trigger: Push eines Git-Tags im Format `v*` (z. B. `v0.1.0`).
-- Schutz: Der Workflow bricht ab, wenn Tag und `package.json`-Version nicht zusammenpassen.
-- Voraussetzung: GitHub-Secret `NPM_TOKEN` mit Publish-Rechten fuer npm.
+- Trigger: manueller Start ueber GitHub Actions (`workflow_dispatch`) mit Input `release_tag` (z. B. `v0.1.0`).
+- Schutz: Der Workflow checkt den angegebenen Tag aus und bricht ab, wenn Tag und `package.json`-Version nicht zusammenpassen.
+- Publishing: npm Trusted Publishing (OIDC), kein `NPM_TOKEN` im Repo notwendig.
+
+Einmaliges Setup fuer Trusted Publishing in npm:
+
+1. In npm die Package-Settings oeffnen (`churchtools-ts-client`).
+2. Unter Trusted Publishers einen GitHub-Publisher fuer dieses Repo und den Workflow `.github/workflows/release.yml` anlegen.
+3. Danach Release manuell starten und als `release_tag` den semver-Tag (`vX.Y.Z`) angeben.
 
 ## End-to-End Smoke-Test (manuell)
 
