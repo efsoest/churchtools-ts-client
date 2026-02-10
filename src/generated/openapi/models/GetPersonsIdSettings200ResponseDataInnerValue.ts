@@ -18,6 +18,10 @@
  * @export
  */
 export type GetPersonsIdSettings200ResponseDataInnerValue = Array<any> | boolean | number | object | string;
+export function instanceOfGetPersonsIdSettings200ResponseDataInnerValue(value: unknown): value is GetPersonsIdSettings200ResponseDataInnerValue {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetPersonsIdSettings200ResponseDataInnerValueFromJSON(json: any): GetPersonsIdSettings200ResponseDataInnerValue {
     return GetPersonsIdSettings200ResponseDataInnerValueFromJSONTyped(json, false);

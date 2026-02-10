@@ -40,6 +40,10 @@ import {
  * @export
  */
 export type AgendaItem = GetEventsIdAgenda200ResponseDataItemsInnerOneOf | GetEventsIdAgenda200ResponseDataItemsInnerOneOf1 | GetEventsIdAgenda200ResponseDataItemsInnerOneOf2;
+export function instanceOfAgendaItem(value: unknown): value is AgendaItem {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function AgendaItemFromJSON(json: any): AgendaItem {
     return AgendaItemFromJSONTyped(json, false);

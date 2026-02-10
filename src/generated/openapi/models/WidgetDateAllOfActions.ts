@@ -103,6 +103,10 @@ import {
  * @export
  */
 export type WidgetDateAllOfActions = WidgetBaseActionsInnerOneOf | WidgetBaseActionsInnerOneOf1 | WidgetBaseActionsInnerOneOf10 | WidgetBaseActionsInnerOneOf11 | WidgetBaseActionsInnerOneOf2 | WidgetBaseActionsInnerOneOf3 | WidgetBaseActionsInnerOneOf4 | WidgetBaseActionsInnerOneOf5 | WidgetBaseActionsInnerOneOf6 | WidgetBaseActionsInnerOneOf7 | WidgetBaseActionsInnerOneOf8 | WidgetBaseActionsInnerOneOf9;
+export function instanceOfWidgetDateAllOfActions(value: unknown): value is WidgetDateAllOfActions {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetDateAllOfActionsFromJSON(json: any): WidgetDateAllOfActions {
     return WidgetDateAllOfActionsFromJSONTyped(json, false);

@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type RoutineStepCreate = GetGroupsGroupIdMembersRoutines200ResponseDataInnerRoutineStepsInnerOneOf1AllOfChildrenInnerAnyOf | PostRoutinesRoutineIdStepsValidateRequestOneOf;
+export function instanceOfRoutineStepCreate(value: unknown): value is RoutineStepCreate {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function RoutineStepCreateFromJSON(json: any): RoutineStepCreate {
     return RoutineStepCreateFromJSONTyped(json, false);

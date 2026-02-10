@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type GetPostReports200ResponseDataInner = GetPostReports200ResponseDataInnerOneOf | GetPostReports200ResponseDataInnerOneOf1;
+export function instanceOfGetPostReports200ResponseDataInner(value: unknown): value is GetPostReports200ResponseDataInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetPostReports200ResponseDataInnerFromJSON(json: any): GetPostReports200ResponseDataInner {
     return GetPostReports200ResponseDataInnerFromJSONTyped(json, false);

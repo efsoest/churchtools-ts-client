@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type GetAddressesSearch200ResponseDataInnerDomainObject = GetAddressesSearch200ResponseDataInnerDomainObjectOneOf | GetAddressesSearch200ResponseDataInnerDomainObjectOneOf1;
+export function instanceOfGetAddressesSearch200ResponseDataInnerDomainObject(value: unknown): value is GetAddressesSearch200ResponseDataInnerDomainObject {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetAddressesSearch200ResponseDataInnerDomainObjectFromJSON(json: any): GetAddressesSearch200ResponseDataInnerDomainObject {
     return GetAddressesSearch200ResponseDataInnerDomainObjectFromJSONTyped(json, false);

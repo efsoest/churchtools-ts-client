@@ -18,6 +18,10 @@
  * @export
  */
 export type AppointmentCreateAllOfEndDate = Date;
+export function instanceOfAppointmentCreateAllOfEndDate(value: unknown): value is AppointmentCreateAllOfEndDate {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function AppointmentCreateAllOfEndDateFromJSON(json: any): AppointmentCreateAllOfEndDate {
     return AppointmentCreateAllOfEndDateFromJSONTyped(json, false);
@@ -45,10 +49,7 @@ export function AppointmentCreateAllOfEndDateToJSONTyped(value?: AppointmentCrea
         return value;
     }
     if (value instanceof Date) {
-        return value == null ? undefined : ((value).toISOString());
-    }
-    if (value instanceof Date) {
-        return ((value).toISOString().substring(0,10));
+        return value.toISOString();
     }
     return {};
 }

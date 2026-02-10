@@ -68,6 +68,10 @@ import {
  * @export
  */
 export type WidgetDetailAllOfRows = GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerRowsInnerOneOf1 | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerRowsInnerOneOf5 | WidgetOneOf1AllOfItemsInnerRowsInnerOneOf | WidgetOneOf1AllOfItemsInnerRowsInnerOneOf1 | WidgetOneOf1AllOfItemsInnerRowsInnerOneOf2 | WidgetOneOf1AllOfItemsInnerRowsInnerOneOf3 | WidgetOneOf1AllOfItemsInnerRowsInnerOneOf4;
+export function instanceOfWidgetDetailAllOfRows(value: unknown): value is WidgetDetailAllOfRows {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetDetailAllOfRowsFromJSON(json: any): WidgetDetailAllOfRows {
     return WidgetDetailAllOfRowsFromJSONTyped(json, false);

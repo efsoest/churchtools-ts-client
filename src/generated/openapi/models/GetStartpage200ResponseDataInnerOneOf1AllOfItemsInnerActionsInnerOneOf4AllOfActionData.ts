@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionData = GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionDataOneOf | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionDataOneOf1;
+export function instanceOfGetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionData(value: unknown): value is GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionData {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionDataFromJSON(json: any): GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionData {
     return GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionDataFromJSONTyped(json, false);

@@ -18,6 +18,10 @@
  * @export
  */
 export type PatchRoutinesRoutineIdRequestFinishInner = number | string;
+export function instanceOfPatchRoutinesRoutineIdRequestFinishInner(value: unknown): value is PatchRoutinesRoutineIdRequestFinishInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PatchRoutinesRoutineIdRequestFinishInnerFromJSON(json: any): PatchRoutinesRoutineIdRequestFinishInner {
     return PatchRoutinesRoutineIdRequestFinishInnerFromJSONTyped(json, false);

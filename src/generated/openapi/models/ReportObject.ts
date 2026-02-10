@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type ReportObject = ReportObjectOneOf | ReportObjectOneOf1;
+export function instanceOfReportObject(value: unknown): value is ReportObject {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function ReportObjectFromJSON(json: any): ReportObject {
     return ReportObjectFromJSONTyped(json, false);

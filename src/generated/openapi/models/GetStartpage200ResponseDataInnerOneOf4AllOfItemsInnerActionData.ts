@@ -54,6 +54,10 @@ import {
  * @export
  */
 export type GetStartpage200ResponseDataInnerOneOf4AllOfItemsInnerActionData = GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf2AllOfActionData | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf3AllOfActionData | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOfAllOfActionData | GetStartpage200ResponseDataInnerOneOfAllOfItemsInnerActionsInnerOneOf3AllOfActionData | GetStartpage200ResponseDataInnerOneOfAllOfItemsInnerActionsInnerOneOf4AllOfActionData | object;
+export function instanceOfGetStartpage200ResponseDataInnerOneOf4AllOfItemsInnerActionData(value: unknown): value is GetStartpage200ResponseDataInnerOneOf4AllOfItemsInnerActionData {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetStartpage200ResponseDataInnerOneOf4AllOfItemsInnerActionDataFromJSON(json: any): GetStartpage200ResponseDataInnerOneOf4AllOfItemsInnerActionData {
     return GetStartpage200ResponseDataInnerOneOf4AllOfItemsInnerActionDataFromJSONTyped(json, false);

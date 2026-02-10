@@ -18,6 +18,10 @@
  * @export
  */
 export type GetGroupMeetingtemplates200ResponseDataInnerAllOfAllOfTemplateInnerOptions = Array<string | null> | string;
+export function instanceOfGetGroupMeetingtemplates200ResponseDataInnerAllOfAllOfTemplateInnerOptions(value: unknown): value is GetGroupMeetingtemplates200ResponseDataInnerAllOfAllOfTemplateInnerOptions {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetGroupMeetingtemplates200ResponseDataInnerAllOfAllOfTemplateInnerOptionsFromJSON(json: any): GetGroupMeetingtemplates200ResponseDataInnerAllOfAllOfTemplateInnerOptions {
     return GetGroupMeetingtemplates200ResponseDataInnerAllOfAllOfTemplateInnerOptionsFromJSONTyped(json, false);

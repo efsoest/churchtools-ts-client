@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type WidgetDomainObjectAllOfActionData = GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf2AllOfActionData | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOfAllOfActionData;
+export function instanceOfWidgetDomainObjectAllOfActionData(value: unknown): value is WidgetDomainObjectAllOfActionData {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetDomainObjectAllOfActionDataFromJSON(json: any): WidgetDomainObjectAllOfActionData {
     return WidgetDomainObjectAllOfActionDataFromJSONTyped(json, false);

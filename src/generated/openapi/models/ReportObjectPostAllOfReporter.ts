@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type ReportObjectPostAllOfReporter = GetDomainobjects200ResponseDataInnerAnyOf | PostBookings201ResponseDataInvolvedPersonsDomainObjectsAnsweredBy;
+export function instanceOfReportObjectPostAllOfReporter(value: unknown): value is ReportObjectPostAllOfReporter {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function ReportObjectPostAllOfReporterFromJSON(json: any): ReportObjectPostAllOfReporter {
     return ReportObjectPostAllOfReporterFromJSONTyped(json, false);

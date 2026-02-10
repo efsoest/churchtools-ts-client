@@ -18,6 +18,10 @@
  * @export
  */
 export type PutGroupsGroupIdPlacesPlaceIdRequestMarkerColor = string;
+export function instanceOfPutGroupsGroupIdPlacesPlaceIdRequestMarkerColor(value: unknown): value is PutGroupsGroupIdPlacesPlaceIdRequestMarkerColor {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PutGroupsGroupIdPlacesPlaceIdRequestMarkerColorFromJSON(json: any): PutGroupsGroupIdPlacesPlaceIdRequestMarkerColor {
     return PutGroupsGroupIdPlacesPlaceIdRequestMarkerColorFromJSONTyped(json, false);

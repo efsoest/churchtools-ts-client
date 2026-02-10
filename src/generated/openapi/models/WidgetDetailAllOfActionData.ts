@@ -26,6 +26,10 @@ import {
  * @export
  */
 export type WidgetDetailAllOfActionData = GetStartpage200ResponseDataInnerOneOfAllOfItemsInnerActionsInnerOneOf3AllOfActionData | object;
+export function instanceOfWidgetDetailAllOfActionData(value: unknown): value is WidgetDetailAllOfActionData {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetDetailAllOfActionDataFromJSON(json: any): WidgetDetailAllOfActionData {
     return WidgetDetailAllOfActionDataFromJSONTyped(json, false);

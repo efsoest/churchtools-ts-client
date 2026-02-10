@@ -1980,3 +1980,4 @@ export * from './WikiPage';
 export * from './WikiPage1';
 export * from './WikiPage1Permissions';
 export * from './WikiPage2';
+export * from './Null';

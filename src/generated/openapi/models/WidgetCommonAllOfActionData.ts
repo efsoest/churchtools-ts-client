@@ -54,6 +54,10 @@ import {
  * @export
  */
 export type WidgetCommonAllOfActionData = GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf2AllOfActionData | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf3AllOfActionData | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOfAllOfActionData | GetStartpage200ResponseDataInnerOneOfAllOfItemsInnerActionsInnerOneOf3AllOfActionData | GetStartpage200ResponseDataInnerOneOfAllOfItemsInnerActionsInnerOneOf4AllOfActionData | object;
+export function instanceOfWidgetCommonAllOfActionData(value: unknown): value is WidgetCommonAllOfActionData {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetCommonAllOfActionDataFromJSON(json: any): WidgetCommonAllOfActionData {
     return WidgetCommonAllOfActionDataFromJSONTyped(json, false);

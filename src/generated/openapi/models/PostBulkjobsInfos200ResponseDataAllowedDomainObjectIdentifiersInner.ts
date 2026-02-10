@@ -18,6 +18,10 @@
  * @export
  */
 export type PostBulkjobsInfos200ResponseDataAllowedDomainObjectIdentifiersInner = number | string;
+export function instanceOfPostBulkjobsInfos200ResponseDataAllowedDomainObjectIdentifiersInner(value: unknown): value is PostBulkjobsInfos200ResponseDataAllowedDomainObjectIdentifiersInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PostBulkjobsInfos200ResponseDataAllowedDomainObjectIdentifiersInnerFromJSON(json: any): PostBulkjobsInfos200ResponseDataAllowedDomainObjectIdentifiersInner {
     return PostBulkjobsInfos200ResponseDataAllowedDomainObjectIdentifiersInnerFromJSONTyped(json, false);

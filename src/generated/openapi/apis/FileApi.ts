@@ -412,7 +412,7 @@ export class FileApi extends runtime.BaseAPI {
         }
 
         if (requestParameters['imageOptions'] != null) {
-            formParams.append('image_options', new Blob([JSON.stringify(objectToJSON(requestParameters['imageOptions']))], { type: "application/json", }));
+            formParams.append('image_options', new Blob([JSON.stringify(requestParameters['imageOptions'])], { type: "application/json", }));
                     }
 
         if (requestParameters['maxHeight'] != null) {

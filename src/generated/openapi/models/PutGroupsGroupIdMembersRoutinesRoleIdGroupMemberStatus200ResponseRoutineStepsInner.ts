@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type PutGroupsGroupIdMembersRoutinesRoleIdGroupMemberStatus200ResponseRoutineStepsInner = GetGroupsGroupIdMembersRoutines200ResponseDataInnerRoutineStepsInnerOneOf1 | GetGroupsGroupIdMembersRoutines200ResponseDataInnerRoutineStepsInnerOneOf1AllOfChildrenInnerAnyOf1;
+export function instanceOfPutGroupsGroupIdMembersRoutinesRoleIdGroupMemberStatus200ResponseRoutineStepsInner(value: unknown): value is PutGroupsGroupIdMembersRoutinesRoleIdGroupMemberStatus200ResponseRoutineStepsInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PutGroupsGroupIdMembersRoutinesRoleIdGroupMemberStatus200ResponseRoutineStepsInnerFromJSON(json: any): PutGroupsGroupIdMembersRoutinesRoleIdGroupMemberStatus200ResponseRoutineStepsInner {
     return PutGroupsGroupIdMembersRoutinesRoleIdGroupMemberStatus200ResponseRoutineStepsInnerFromJSONTyped(json, false);

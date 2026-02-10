@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type GetGroupsGroupIdMemberfields200ResponseDataInner = GetGroupsGroupIdMemberfields200ResponseDataInnerOneOf | GetGroupsGroupIdMemberfields200ResponseDataInnerOneOf1;
+export function instanceOfGetGroupsGroupIdMemberfields200ResponseDataInner(value: unknown): value is GetGroupsGroupIdMemberfields200ResponseDataInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetGroupsGroupIdMemberfields200ResponseDataInnerFromJSON(json: any): GetGroupsGroupIdMemberfields200ResponseDataInner {
     return GetGroupsGroupIdMemberfields200ResponseDataInnerFromJSONTyped(json, false);

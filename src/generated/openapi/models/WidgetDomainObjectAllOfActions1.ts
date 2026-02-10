@@ -96,6 +96,10 @@ import {
  * @export
  */
 export type WidgetDomainObjectAllOfActions1 = GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf1 | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf2 | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf3 | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4 | GetStartpage200ResponseDataInnerOneOfAllOfItemsInnerActionsInnerOneOf | GetStartpage200ResponseDataInnerOneOfAllOfItemsInnerActionsInnerOneOf3 | WidgetBaseActionsInnerOneOf4 | WidgetCommonAllOfActions1OneOf | WidgetCommonAllOfActions1OneOf1 | WidgetCommonAllOfActions1OneOf2;
+export function instanceOfWidgetDomainObjectAllOfActions1(value: unknown): value is WidgetDomainObjectAllOfActions1 {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetDomainObjectAllOfActions1FromJSON(json: any): WidgetDomainObjectAllOfActions1 {
     return WidgetDomainObjectAllOfActions1FromJSONTyped(json, false);

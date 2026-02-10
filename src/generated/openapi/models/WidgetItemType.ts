@@ -54,6 +54,10 @@ import {
  * @export
  */
 export type WidgetItemType = WidgetItemTypeOneOf | WidgetItemTypeOneOf1 | WidgetItemTypeOneOf2 | WidgetItemTypeOneOf3 | WidgetItemTypeOneOf4;
+export function instanceOfWidgetItemType(value: unknown): value is WidgetItemType {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetItemTypeFromJSON(json: any): WidgetItemType {
     return WidgetItemTypeFromJSONTyped(json, false);

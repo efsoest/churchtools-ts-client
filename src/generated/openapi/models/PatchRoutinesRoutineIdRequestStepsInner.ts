@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type PatchRoutinesRoutineIdRequestStepsInner = PatchRoutinesRoutineIdRequestStepsInnerOneOf | PatchRoutinesRoutineIdRequestStepsInnerOneOf1;
+export function instanceOfPatchRoutinesRoutineIdRequestStepsInner(value: unknown): value is PatchRoutinesRoutineIdRequestStepsInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PatchRoutinesRoutineIdRequestStepsInnerFromJSON(json: any): PatchRoutinesRoutineIdRequestStepsInner {
     return PatchRoutinesRoutineIdRequestStepsInnerFromJSONTyped(json, false);

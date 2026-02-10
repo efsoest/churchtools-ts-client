@@ -18,6 +18,10 @@
  * @export
  */
 export type GetBookings200ResponseDataInnerBookingBaseEndDate = Date;
+export function instanceOfGetBookings200ResponseDataInnerBookingBaseEndDate(value: unknown): value is GetBookings200ResponseDataInnerBookingBaseEndDate {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetBookings200ResponseDataInnerBookingBaseEndDateFromJSON(json: any): GetBookings200ResponseDataInnerBookingBaseEndDate {
     return GetBookings200ResponseDataInnerBookingBaseEndDateFromJSONTyped(json, false);
@@ -45,10 +49,7 @@ export function GetBookings200ResponseDataInnerBookingBaseEndDateToJSONTyped(val
         return value;
     }
     if (value instanceof Date) {
-        return value == null ? undefined : ((value).toISOString());
-    }
-    if (value instanceof Date) {
-        return ((value).toISOString().substring(0,10));
+        return value.toISOString();
     }
     return {};
 }

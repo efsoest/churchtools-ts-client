@@ -18,6 +18,10 @@
  * @export
  */
 export type GetDbfields200ResponseDataInnerAllOfOptionsInnerAllOfId = number | string;
+export function instanceOfGetDbfields200ResponseDataInnerAllOfOptionsInnerAllOfId(value: unknown): value is GetDbfields200ResponseDataInnerAllOfOptionsInnerAllOfId {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetDbfields200ResponseDataInnerAllOfOptionsInnerAllOfIdFromJSON(json: any): GetDbfields200ResponseDataInnerAllOfOptionsInnerAllOfId {
     return GetDbfields200ResponseDataInnerAllOfOptionsInnerAllOfIdFromJSONTyped(json, false);

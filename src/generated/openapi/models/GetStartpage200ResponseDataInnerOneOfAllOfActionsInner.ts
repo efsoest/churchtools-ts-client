@@ -103,6 +103,10 @@ import {
  * @export
  */
 export type GetStartpage200ResponseDataInnerOneOfAllOfActionsInner = GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf1 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf10 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf11 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf2 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf3 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf4 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf5 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf6 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf7 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf8 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf9;
+export function instanceOfGetStartpage200ResponseDataInnerOneOfAllOfActionsInner(value: unknown): value is GetStartpage200ResponseDataInnerOneOfAllOfActionsInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerFromJSON(json: any): GetStartpage200ResponseDataInnerOneOfAllOfActionsInner {
     return GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerFromJSONTyped(json, false);

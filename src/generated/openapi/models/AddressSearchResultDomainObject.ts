@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type AddressSearchResultDomainObject = GetDomainobjects200ResponseDataInnerAnyOf5 | PostBookings201ResponseDataInvolvedPersonsDomainObjectsAnsweredBy;
+export function instanceOfAddressSearchResultDomainObject(value: unknown): value is AddressSearchResultDomainObject {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function AddressSearchResultDomainObjectFromJSON(json: any): AddressSearchResultDomainObject {
     return AddressSearchResultDomainObjectFromJSONTyped(json, false);

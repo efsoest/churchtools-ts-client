@@ -18,6 +18,10 @@
  * @export
  */
 export type ProfileUpdateAddressAllOfAllOfColor = string;
+export function instanceOfProfileUpdateAddressAllOfAllOfColor(value: unknown): value is ProfileUpdateAddressAllOfAllOfColor {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function ProfileUpdateAddressAllOfAllOfColorFromJSON(json: any): ProfileUpdateAddressAllOfAllOfColor {
     return ProfileUpdateAddressAllOfAllOfColorFromJSONTyped(json, false);

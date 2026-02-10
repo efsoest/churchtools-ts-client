@@ -96,6 +96,10 @@ import {
  * @export
  */
 export type WidgetPostAllOfActions1 = WidgetBaseActionsInnerOneOf4 | WidgetCommonAllOfActions1OneOf | WidgetCommonAllOfActions1OneOf1 | WidgetCommonAllOfActions1OneOf2 | WidgetItemTypeOneOfActionsInnerOneOf | WidgetItemTypeOneOfActionsInnerOneOf1 | WidgetItemTypeOneOfActionsInnerOneOf2 | WidgetItemTypeOneOfActionsInnerOneOf3 | WidgetItemTypeOneOfActionsInnerOneOf4 | WidgetItemTypeOneOfActionsInnerOneOf5 | WidgetItemTypeOneOfActionsInnerOneOf6;
+export function instanceOfWidgetPostAllOfActions1(value: unknown): value is WidgetPostAllOfActions1 {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetPostAllOfActions1FromJSON(json: any): WidgetPostAllOfActions1 {
     return WidgetPostAllOfActions1FromJSONTyped(json, false);

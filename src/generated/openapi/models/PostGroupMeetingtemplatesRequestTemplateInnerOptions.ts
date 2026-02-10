@@ -18,6 +18,10 @@
  * @export
  */
 export type PostGroupMeetingtemplatesRequestTemplateInnerOptions = Array<string> | string;
+export function instanceOfPostGroupMeetingtemplatesRequestTemplateInnerOptions(value: unknown): value is PostGroupMeetingtemplatesRequestTemplateInnerOptions {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PostGroupMeetingtemplatesRequestTemplateInnerOptionsFromJSON(json: any): PostGroupMeetingtemplatesRequestTemplateInnerOptions {
     return PostGroupMeetingtemplatesRequestTemplateInnerOptionsFromJSONTyped(json, false);

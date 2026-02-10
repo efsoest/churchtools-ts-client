@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type GroupMemberField = GroupMemberFieldOneOf | GroupMemberFieldOneOf1;
+export function instanceOfGroupMemberField(value: unknown): value is GroupMemberField {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GroupMemberFieldFromJSON(json: any): GroupMemberField {
     return GroupMemberFieldFromJSONTyped(json, false);

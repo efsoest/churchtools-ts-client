@@ -18,6 +18,10 @@
  * @export
  */
 export type PublicGroupFormResultSignUpPersonsInnerFormDataInnerValue = Array<any> | boolean | number | object | string;
+export function instanceOfPublicGroupFormResultSignUpPersonsInnerFormDataInnerValue(value: unknown): value is PublicGroupFormResultSignUpPersonsInnerFormDataInnerValue {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PublicGroupFormResultSignUpPersonsInnerFormDataInnerValueFromJSON(json: any): PublicGroupFormResultSignUpPersonsInnerFormDataInnerValue {
     return PublicGroupFormResultSignUpPersonsInnerFormDataInnerValueFromJSONTyped(json, false);

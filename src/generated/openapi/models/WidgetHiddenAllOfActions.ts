@@ -103,6 +103,10 @@ import {
  * @export
  */
 export type WidgetHiddenAllOfActions = WidgetBaseActionsInnerOneOf | WidgetBaseActionsInnerOneOf1 | WidgetBaseActionsInnerOneOf10 | WidgetBaseActionsInnerOneOf11 | WidgetBaseActionsInnerOneOf2 | WidgetBaseActionsInnerOneOf3 | WidgetBaseActionsInnerOneOf4 | WidgetBaseActionsInnerOneOf5 | WidgetBaseActionsInnerOneOf6 | WidgetBaseActionsInnerOneOf7 | WidgetBaseActionsInnerOneOf8 | WidgetBaseActionsInnerOneOf9;
+export function instanceOfWidgetHiddenAllOfActions(value: unknown): value is WidgetHiddenAllOfActions {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetHiddenAllOfActionsFromJSON(json: any): WidgetHiddenAllOfActions {
     return WidgetHiddenAllOfActionsFromJSONTyped(json, false);

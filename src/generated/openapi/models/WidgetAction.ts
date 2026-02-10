@@ -103,6 +103,10 @@ import {
  * @export
  */
 export type WidgetAction = GetStartpage200ResponseDataInnerOneOf1AllOfActionsInnerOneOf | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf1 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf10 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf11 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf2 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf3 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf5 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf6 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf7 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf8 | GetStartpage200ResponseDataInnerOneOfAllOfActionsInnerOneOf9 | GetStartpage200ResponseDataInnerOneOfAllOfItemsInnerActionsInnerOneOf4;
+export function instanceOfWidgetAction(value: unknown): value is WidgetAction {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetActionFromJSON(json: any): WidgetAction {
     return WidgetActionFromJSONTyped(json, false);

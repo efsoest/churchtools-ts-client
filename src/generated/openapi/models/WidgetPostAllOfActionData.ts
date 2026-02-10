@@ -33,6 +33,10 @@ import {
  * @export
  */
 export type WidgetPostAllOfActionData = GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionDataOneOf | GetStartpage200ResponseDataInnerOneOf1AllOfItemsInnerActionsInnerOneOf4AllOfActionDataOneOf1;
+export function instanceOfWidgetPostAllOfActionData(value: unknown): value is WidgetPostAllOfActionData {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetPostAllOfActionDataFromJSON(json: any): WidgetPostAllOfActionData {
     return WidgetPostAllOfActionDataFromJSONTyped(json, false);

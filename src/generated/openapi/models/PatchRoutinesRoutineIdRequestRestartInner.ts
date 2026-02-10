@@ -18,6 +18,10 @@
  * @export
  */
 export type PatchRoutinesRoutineIdRequestRestartInner = number | string;
+export function instanceOfPatchRoutinesRoutineIdRequestRestartInner(value: unknown): value is PatchRoutinesRoutineIdRequestRestartInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PatchRoutinesRoutineIdRequestRestartInnerFromJSON(json: any): PatchRoutinesRoutineIdRequestRestartInner {
     return PatchRoutinesRoutineIdRequestRestartInnerFromJSONTyped(json, false);

@@ -18,6 +18,10 @@
  * @export
  */
 export type BulkInfosAllowedDomainObjectIdentifiersInner = number | string;
+export function instanceOfBulkInfosAllowedDomainObjectIdentifiersInner(value: unknown): value is BulkInfosAllowedDomainObjectIdentifiersInner {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function BulkInfosAllowedDomainObjectIdentifiersInnerFromJSON(json: any): BulkInfosAllowedDomainObjectIdentifiersInner {
     return BulkInfosAllowedDomainObjectIdentifiersInnerFromJSONTyped(json, false);

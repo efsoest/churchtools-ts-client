@@ -18,6 +18,10 @@
  * @export
  */
 export type PutCampusesIdRequestSignUpGroup = number | object;
+export function instanceOfPutCampusesIdRequestSignUpGroup(value: unknown): value is PutCampusesIdRequestSignUpGroup {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function PutCampusesIdRequestSignUpGroupFromJSON(json: any): PutCampusesIdRequestSignUpGroup {
     return PutCampusesIdRequestSignUpGroupFromJSONTyped(json, false);

@@ -61,6 +61,10 @@ import {
  * @export
  */
 export type Widget = GetStartpage200ResponseDataInnerOneOf5 | WidgetOneOf | WidgetOneOf1 | WidgetOneOf2 | WidgetOneOf3 | WidgetOneOf4;
+export function instanceOfWidget(value: unknown): value is Widget {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function WidgetFromJSON(json: any): Widget {
     return WidgetFromJSONTyped(json, false);

@@ -18,6 +18,10 @@
  * @export
  */
 export type GetPersonsIdSettingsModuleAttribute200ResponseDataValue = Array<any> | boolean | number | object | string;
+export function instanceOfGetPersonsIdSettingsModuleAttribute200ResponseDataValue(value: unknown): value is GetPersonsIdSettingsModuleAttribute200ResponseDataValue {
+  return typeof value === 'object' && value !== null;
+}
+
 
 export function GetPersonsIdSettingsModuleAttribute200ResponseDataValueFromJSON(json: any): GetPersonsIdSettingsModuleAttribute200ResponseDataValue {
     return GetPersonsIdSettingsModuleAttribute200ResponseDataValueFromJSONTyped(json, false);
