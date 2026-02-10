@@ -1,19 +1,34 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Git tag to release (for example v0.1.0)'
+        required: true
+        type: string
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.release_tag }}
+
+      - name: Validate tag format
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: test "${RELEASE_TAG#v}" != "${RELEASE_TAG}"
+
+      - name: Verify ref is a git tag
+        run: git rev-parse --verify "refs/tags/${{ inputs.release_tag }}"
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -30,7 +45,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Verify tag matches package version
-        run: test "v$(node -p "require('./package.json').version")" = "${GITHUB_REF_NAME}"
+        run: test "v$(node -p "require('./package.json').version")" = "${{ inputs.release_tag }}"
 
       - name: Format check
         run: bun run format:check
@@ -46,5 +61,3 @@ jobs:
 
       - name: Publish to npm
         run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
