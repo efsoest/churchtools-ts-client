@@ -31,7 +31,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 - [x] Generator-Setup fuer `typescript-fetch` erstellen.
 - [x] `generate-api` Skript erstellen und gegen `swagger.json` ausfuehren.
-- [ ] Sicherstellen, dass generierter Code ohne manuelle Anpassung buildbar ist.
+- [x] Sicherstellen, dass generierter Code ohne manuelle Anpassung buildbar ist.
 
 ### Phase 3: Core-Client
 
@@ -56,7 +56,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 2: Strategy fuer bekannte Generator-Inkompatibilitaeten (OpenAPI 3.1 -> typescript-fetch) festlegen`
+`Phase 3: Ziel-Architektur des Smart Clients finalisieren und Core-Bausteine aufsetzen`
 
 ## Arbeitslog
 
@@ -65,6 +65,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Verifiziert, dass der generierte Code aktuell bekannte TypeScript-Probleme enthaelt (z. B. fehlendes `Null`-Model, doppelte API-Exports, fehlerhafte Helper-Referenzen); diese werden als eigener Architektur-/Stabilisierungs-Schritt behandelt.
 - 2026-02-10: Build (`bun run build`), Typecheck (`bun run typecheck`) und Test-Runner (`bun run test`) fuer den handgeschriebenen Layer sind gruen; Generated-Code ist temporaer vom Root-Typecheck ausgeschlossen, bis die Generator-Strategie final ist.
 - 2026-02-10: Prettier mit einheitlicher Konfiguration eingefuehrt (`singleQuote: true`, `trailingComma: all`), Format-Skripte (`format:check`, `format:write`) angelegt und einmal projektweit ausgefuehrt.
+- 2026-02-10: Stabile Generator-Pipeline eingefuehrt (`generate:all = generate -> postprocess:generated -> typecheck:generated`) inkl. automatischer Fixes fuer bekannte OpenAPI-Generator-Inkompatibilitaeten.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
