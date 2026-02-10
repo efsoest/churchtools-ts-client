@@ -8,6 +8,8 @@ export type {
   ChurchToolsLoginTokenConfig,
   ChurchToolsSessionAuthConfig,
 } from './core/auth';
+export { createCsrfMiddleware } from './core/csrf';
+export type { ChurchToolsCsrfOptions } from './core/csrf';
 export { createRateLimitMiddleware } from './core/rate-limit';
 export type { ChurchToolsRateLimitOptions } from './core/rate-limit';
 export {

@@ -9,6 +9,7 @@ import {
   type ChurchToolsLoginTokenConfig,
   type ChurchToolsSessionAuthConfig,
 } from './core/auth';
+import { createCsrfMiddleware, type ChurchToolsCsrfOptions } from './core/csrf';
 import {
   createRateLimitMiddleware,
   type ChurchToolsRateLimitOptions,
@@ -114,6 +115,12 @@ export type ChurchToolsClientConfig = {
    * Adds `with_session=true` to `/whoami` to force backend session creation.
    */
   forceSession?: boolean;
+  /**
+   * Configuration for automatic CSRF token handling on mutating requests.
+   *
+   * Use `false` to disable automatic CSRF handling.
+   */
+  csrf?: ChurchToolsCsrfOptions | false;
   /**
    * Configuration for automatic 429 backoff + retry.
    *
@@ -234,6 +241,28 @@ const createClientFetch = (
   const sessionAuthMiddleware = createSessionAuthMiddleware(sessionAuthConfig);
   if (sessionAuthMiddleware) {
     middleware.push(sessionAuthMiddleware);
+  }
+  if (config.csrf !== false) {
+    const csrfConfig: {
+      baseUrl: string;
+      fetchApi: FetchLike;
+      timeoutMs: number;
+      credentials?: RequestCredentials;
+      options?: ChurchToolsCsrfOptions;
+    } = {
+      baseUrl: params.baseUrl,
+      fetchApi,
+      timeoutMs: params.timeoutMs,
+    };
+    if (config.credentials !== undefined) {
+      csrfConfig.credentials = config.credentials;
+    }
+    if (config.csrf !== undefined) {
+      csrfConfig.options = config.csrf;
+    }
+
+    const csrfMiddleware = createCsrfMiddleware(csrfConfig);
+    middleware.push(csrfMiddleware);
   }
   if (config.rateLimit !== false) {
     const rateLimitMiddleware = createRateLimitMiddleware(config.rateLimit);
