@@ -67,7 +67,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 4: Finding 2 umsetzen (Cookie-Middleware: credentials=omit respektieren) inkl. Security-Test`
+`Phase 4: Finding 3 umsetzen (Host-only-Cookie-Semantik) inkl. Security-Tests`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
@@ -84,13 +84,14 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 2. Cookie-Middleware muss `credentials: 'omit'` respektieren (mittel)
 - Finding: Cookie-Header wird aktuell auch dann injiziert, wenn Request explizit keine Credentials senden soll.
+- Status: [x] umgesetzt
 - Behebung:
   - In `src/core/cookies.ts` im `pre`-Hook bei `credentials === 'omit'` keine Cookie-Injektion.
-  - Optional im `post`-Hook bei `credentials === 'omit'` keine Session-Persistierung aus `Set-Cookie`.
+  - Im `post`-Hook bei `credentials === 'omit'` keine Session-Persistierung aus `Set-Cookie`.
   - Security-Markierung im Code: Kommentar/JSDoc, dass `omit` eine explizite Sicherheits-/Privacy-Intention des Callers ist.
 - Tests:
   - Neuer Test in `tests/core/cookies.test.ts`: bei `credentials: 'omit'` wird kein `Cookie`-Header gesetzt.
-  - Optionaler Test: `Set-Cookie` wird in diesem Modus nicht gespeichert.
+  - Neuer Test: `Set-Cookie` wird in diesem Modus nicht gespeichert.
 
 3. Host-only-Cookie-Semantik RFC-konform abbilden (niedrig)
 - Finding: Cookies ohne `Domain`-Attribut koennen aktuell wie Domain-Cookies wirken.
@@ -122,6 +123,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Runtime-agnostisches Cookie-/Session-Konzept eingefuehrt (Cookie-Middleware + InMemoryCookieStore, Browser-Auto-Bypass, manuelles Mode-Override) und per Bun-Tests abgesichert.
 - 2026-02-10: Security-Audit (OWASP-Top-10-orientiert) ueber den handgeschriebenen Layer durchgefuehrt; drei priorisierte Findings dokumentiert und als Security-Hardening-Backlog in diesem Plan aufgenommen.
 - 2026-02-10: Security-Hardening Finding 1 umgesetzt: CSRF-Middleware mit explizitem Same-Origin-Guard abgesichert (security-relevante Code-Markierung in `src/core/csrf.ts`) und Security-Regressionstest fuer Cross-Origin-POST in `tests/core/csrf.test.ts` ergaenzt.
+- 2026-02-10: Security-Hardening Finding 2 umgesetzt: Cookie-Middleware respektiert `credentials: 'omit'` strikt in Pre/Post-Hook (security-relevante Code-Markierungen in `src/core/cookies.ts`) und Security-Regressionstests fuer Header-Injektion/Persistierung in `tests/core/cookies.test.ts` ergaenzt.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
