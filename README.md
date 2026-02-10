@@ -72,6 +72,7 @@ Bereits implementiert ist ein runtime-agnostischer Core-Transport-Layer (`src/co
 3. **Fehlernormalisierung:** eigene Fehlertypen (`ChurchToolsHttpError`, `ChurchToolsTimeoutError`, `ChurchToolsRequestError`).
 4. **Auth-/Session-Middleware:** automatische `/whoami`-Token-Bridge, Header `X-OnlyAuthenticated: 1` und Session-Recovery für `401` plus `200` mit `{ message: "Session expired!" }`.
 5. **Rate-Limit-Middleware:** automatische Recovery bei `429` mit `Retry-After`-Support und konfigurierbarem Backoff.
+6. **CSRF-Middleware:** automatische Token-Beschaffung über `/api/csrftoken` und Header-Injektion für mutierende Requests.
 
 Der `ChurchToolsClient` nutzt diesen Transport bereits als Basis und kann damit generierte API-Klassen über `client.api(...)` instanziieren.
 
