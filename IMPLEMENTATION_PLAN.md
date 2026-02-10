@@ -39,13 +39,13 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - [x] `ChurchToolsClient` als handgeschriebene Facade auf den Generated Layer aufbauen.
 - [x] Token-to-Session-Bridge (`/whoami?login_token=...`) implementieren.
 - [x] Session-Recovery fuer `401` und `200 + { message: "Session expired!" }` implementieren.
-- [ ] Rate-Limit-Recovery fuer `429` mit Backoff implementieren.
+- [x] Rate-Limit-Recovery fuer `429` mit Backoff implementieren.
 - [ ] CSRF-Flow fuer mutierende Requests und Upload-Sonderfaelle implementieren.
 - [ ] Runtime-agnostisches Cookie/Session-Konzept fuer Browser/Node/Bun definieren.
 
 ### Phase 4: Qualitaet
 
-- [ ] Unit-Tests fuer Auth-, Session- und Rate-Limit-Flow erstellen.
+- [x] Unit-Tests fuer Auth-, Session- und Rate-Limit-Flow erstellen.
 - [ ] Mock-gestuetzte Integrationstests fuer Kernpfade erstellen.
 - [ ] Strict Typecheck, Build und Test lokal gruen.
 
@@ -57,7 +57,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 3: Rate-Limit-Recovery (429) auf den Core-Transport aufsetzen`
+`Phase 3: CSRF-Flow fuer mutierende Requests und Upload-Sonderfaelle aufsetzen`
 
 ## Arbeitslog
 
@@ -72,6 +72,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: `ChurchToolsClient` auf Core-Transport umgestellt und API-Facade (`client.api(...)`) fuer Generated APIs eingefuehrt.
 - 2026-02-10: Core-Code (`client`, `transport`, `errors`) fuer Lesbarkeit/Wartbarkeit refaktoriert und mit zusaetzlicher JSDoc-Dokumentation versehen.
 - 2026-02-10: Auth-/Session-Layer implementiert: automatische `whoami`-Token-Bridge, `X-OnlyAuthenticated`-Header-Management und transparente Session-Recovery fuer `401` sowie `200 + "Session expired!"` (inkl. Bun-Tests).
+- 2026-02-10: Rate-Limit-Recovery fuer `429` implementiert (Retry-After + Backoff + Jitter, konfigurierbar im Client) und per Bun-Tests abgesichert.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
