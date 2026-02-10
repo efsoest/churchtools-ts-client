@@ -1,12 +1,19 @@
 import { ChurchToolsHttpError, normalizeTransportError } from './errors';
 
+/**
+ * Runtime-agnostic fetch function signature used by the client.
+ *
+ * We intentionally avoid `typeof fetch` because Bun augments the global fetch
+ * function with additional properties (for example `preconnect`) that are not
+ * required by our transport abstraction.
+ */
 export type FetchLike = (
   input: RequestInfo | URL,
   init?: RequestInit,
 ) => Promise<Response>;
 
 /**
- * Local fetch parameter object used in middleware hooks.
+ * Local request object passed through middleware hooks.
  */
 export type ChurchToolsFetchParams = {
   url: string;
@@ -40,23 +47,21 @@ export type ChurchToolsErrorContext = {
   response?: Response;
 };
 
+type MaybePromise<T> = T | Promise<T>;
+
 /**
- * Middleware contract for the ChurchTools core transport pipeline.
+ * Middleware contract for the ChurchTools transport pipeline.
  */
 export type ChurchToolsMiddleware = {
   pre?(
     context: ChurchToolsRequestContext,
-  ): ChurchToolsFetchParams | void | Promise<ChurchToolsFetchParams | void>;
-  post?(
-    context: ChurchToolsResponseContext,
-  ): Response | void | Promise<Response | void>;
-  onError?(
-    context: ChurchToolsErrorContext,
-  ): Response | void | Promise<Response | void>;
+  ): MaybePromise<ChurchToolsFetchParams | void>;
+  post?(context: ChurchToolsResponseContext): MaybePromise<Response | void>;
+  onError?(context: ChurchToolsErrorContext): MaybePromise<Response | void>;
 };
 
 /**
- * Configuration for the transport fetch wrapper.
+ * Configuration for transport creation.
  */
 export type ChurchToolsTransportConfig = {
   fetchApi: FetchLike;
@@ -65,25 +70,44 @@ export type ChurchToolsTransportConfig = {
 };
 
 type CombinedSignal = {
-  signal: AbortSignal | undefined;
-  timeoutSignal: AbortSignal | undefined;
+  signal?: AbortSignal;
+  timeoutSignal?: AbortSignal;
   dispose: () => void;
 };
 
 const abortSignalAny = (
-  AbortSignal as unknown as {
-    any?: (signals: AbortSignal[]) => AbortSignal;
-  }
+  AbortSignal as unknown as { any?: (signals: AbortSignal[]) => AbortSignal }
 ).any;
 
+const getRequestUrl = (input: RequestInfo | URL): string => {
+  if (typeof input === 'string') {
+    return input;
+  }
+  if (input instanceof URL) {
+    return input.toString();
+  }
+  return input.url;
+};
+
+/**
+ * Combines an optional external signal with a timeout signal.
+ *
+ * - If timeout is disabled (`<= 0`), the original signal is reused.
+ * - If `AbortSignal.any` is available, we use it directly.
+ * - Otherwise, a manual fallback controller forwards abort events.
+ */
 const combineSignals = (
   sourceSignal: AbortSignal | null | undefined,
   timeoutMs: number,
 ): CombinedSignal => {
   if (timeoutMs <= 0) {
+    if (sourceSignal) {
+      return {
+        signal: sourceSignal,
+        dispose: () => undefined,
+      };
+    }
     return {
-      signal: sourceSignal ?? undefined,
-      timeoutSignal: undefined,
       dispose: () => undefined,
     };
   }
@@ -109,13 +133,10 @@ const combineSignals = (
     };
   }
 
-  // Fallback for runtimes without AbortSignal.any
   const combinedController = new AbortController();
-
   const forwardSourceAbort = () => {
     combinedController.abort();
   };
-
   const forwardTimeoutAbort = () => {
     combinedController.abort();
   };
@@ -143,21 +164,108 @@ const combineSignals = (
   };
 };
 
-const toUrl = (input: RequestInfo | URL): string => {
-  if (typeof input === 'string') {
-    return input;
+const applyPreMiddleware = async (
+  middleware: ChurchToolsMiddleware[],
+  fetchApi: FetchLike,
+  initial: ChurchToolsFetchParams,
+): Promise<ChurchToolsFetchParams> => {
+  let request = initial;
+
+  for (const step of middleware) {
+    if (!step.pre) {
+      continue;
+    }
+    const overridden = await step.pre({ fetch: fetchApi, request });
+    if (overridden) {
+      request = overridden;
+    }
   }
-  if (input instanceof URL) {
-    return input.toString();
+
+  return request;
+};
+
+const applyPostMiddleware = async (
+  middleware: ChurchToolsMiddleware[],
+  fetchApi: FetchLike,
+  request: ChurchToolsFetchParams,
+  initial: Response,
+): Promise<Response> => {
+  let response = initial;
+
+  for (const step of middleware) {
+    if (!step.post) {
+      continue;
+    }
+    const overridden = await step.post({
+      fetch: fetchApi,
+      request,
+      response: response.clone(),
+    });
+    if (overridden) {
+      response = overridden;
+    }
   }
-  return input.url;
+
+  return response;
+};
+
+const applyErrorMiddleware = async (
+  middleware: ChurchToolsMiddleware[],
+  fetchApi: FetchLike,
+  request: ChurchToolsFetchParams,
+  error: unknown,
+): Promise<Response | undefined> => {
+  let recoveredResponse: Response | undefined;
+
+  for (const step of middleware) {
+    if (!step.onError) {
+      continue;
+    }
+
+    const context: ChurchToolsErrorContext = recoveredResponse
+      ? {
+          fetch: fetchApi,
+          request,
+          error,
+          response: recoveredResponse.clone(),
+        }
+      : {
+          fetch: fetchApi,
+          request,
+          error,
+        };
+
+    const overridden = await step.onError(context);
+    if (overridden) {
+      recoveredResponse = overridden;
+    }
+  }
+
+  return recoveredResponse;
+};
+
+const isSuccessResponse = (response: Response): boolean =>
+  response.status >= 200 && response.status < 300;
+
+const throwHttpError = (params: {
+  response: Response;
+  request: ChurchToolsFetchParams;
+  fallbackMethod: string;
+  cause?: unknown;
+}): never => {
+  throw new ChurchToolsHttpError({
+    response: params.response,
+    url: params.request.url,
+    method: params.request.init.method ?? params.fallbackMethod,
+    cause: params.cause,
+  });
 };
 
 /**
- * Creates a fetch wrapper that adds:
- * - pre/post/error middleware hooks
- * - client-side timeout handling via AbortController
- * - normalized project errors for HTTP/transport failures
+ * Creates a fetch wrapper with:
+ * - middleware hooks (`pre`, `post`, `onError`)
+ * - timeout handling per request
+ * - normalized project-specific errors
  */
 export const createTransportFetch = (
   config: ChurchToolsTransportConfig,
@@ -166,100 +274,63 @@ export const createTransportFetch = (
   let wrappedFetch: FetchLike;
 
   wrappedFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
-    const requestUrl = toUrl(input);
-    const requestMethod = init?.method ?? 'GET';
-
+    const fallbackMethod = init?.method ?? 'GET';
     const signalState = combineSignals(init?.signal, config.timeoutMs);
+
     const requestInit: RequestInit = { ...init };
-    if (signalState.signal !== undefined) {
+    if (signalState.signal) {
       requestInit.signal = signalState.signal;
     }
 
-    let fetchParams: ChurchToolsFetchParams = {
-      url: requestUrl,
+    let request: ChurchToolsFetchParams = {
+      url: getRequestUrl(input),
       init: requestInit,
     };
 
     try {
-      for (const step of middleware) {
-        if (!step.pre) {
-          continue;
-        }
-        const overridden = await step.pre({
-          fetch: wrappedFetch,
-          request: fetchParams,
-        });
-        if (overridden) {
-          fetchParams = overridden;
-        }
-      }
+      request = await applyPreMiddleware(middleware, wrappedFetch, request);
 
-      let response = await config.fetchApi(fetchParams.url, fetchParams.init);
+      const rawResponse = await config.fetchApi(request.url, request.init);
+      const response = await applyPostMiddleware(
+        middleware,
+        wrappedFetch,
+        request,
+        rawResponse,
+      );
 
-      for (const step of middleware) {
-        if (!step.post) {
-          continue;
-        }
-        const overridden = await step.post({
-          fetch: wrappedFetch,
-          request: fetchParams,
-          response: response.clone(),
-        });
-        if (overridden) {
-          response = overridden;
-        }
-      }
-
-      if (response.status < 200 || response.status >= 300) {
-        throw new ChurchToolsHttpError({
+      if (!isSuccessResponse(response)) {
+        throwHttpError({
           response,
-          url: fetchParams.url,
-          method: fetchParams.init.method ?? requestMethod,
+          request,
+          fallbackMethod,
         });
       }
 
       return response;
     } catch (error) {
-      let recoveredResponse: Response | undefined;
-
-      for (const step of middleware) {
-        if (!step.onError) {
-          continue;
-        }
-        const context: ChurchToolsErrorContext = recoveredResponse
-          ? {
-              fetch: wrappedFetch,
-              request: fetchParams,
-              error,
-              response: recoveredResponse.clone(),
-            }
-          : {
-              fetch: wrappedFetch,
-              request: fetchParams,
-              error,
-            };
-        const maybeRecovered = await step.onError(context);
-        if (maybeRecovered) {
-          recoveredResponse = maybeRecovered;
-        }
-      }
+      const recoveredResponse = await applyErrorMiddleware(
+        middleware,
+        wrappedFetch,
+        request,
+        error,
+      );
 
       if (recoveredResponse) {
-        if (recoveredResponse.status >= 200 && recoveredResponse.status < 300) {
+        if (isSuccessResponse(recoveredResponse)) {
           return recoveredResponse;
         }
-        throw new ChurchToolsHttpError({
+        throwHttpError({
           response: recoveredResponse,
-          url: fetchParams.url,
-          method: fetchParams.init.method ?? requestMethod,
+          request,
+          fallbackMethod,
           cause: error,
         });
       }
 
       throw normalizeTransportError({
         error,
-        url: fetchParams.url,
-        method: fetchParams.init.method ?? requestMethod,
+        url: request.url,
+        method: request.init.method ?? fallbackMethod,
         timeoutMs: config.timeoutMs,
         timedOut: Boolean(signalState.timeoutSignal?.aborted),
       });

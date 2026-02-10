@@ -4,6 +4,36 @@
 export type ChurchToolsErrorCode = 'HTTP_ERROR' | 'REQUEST_ERROR' | 'TIMEOUT';
 
 /**
+ * Shared parameter shape for request-scoped errors.
+ */
+export type ChurchToolsRequestErrorParams = {
+  url: string;
+  method?: string;
+  cause?: unknown;
+};
+
+/**
+ * Parameters for HTTP status errors.
+ */
+export type ChurchToolsHttpErrorParams = ChurchToolsRequestErrorParams & {
+  response: Response;
+};
+
+/**
+ * Parameters for generic request/transport errors.
+ */
+export type ChurchToolsRequestFailureParams = ChurchToolsRequestErrorParams & {
+  message: string;
+};
+
+/**
+ * Parameters for timeout errors.
+ */
+export type ChurchToolsTimeoutErrorParams = ChurchToolsRequestErrorParams & {
+  timeoutMs: number;
+};
+
+/**
  * Shared base error for all client-side transport/runtime failures.
  */
 export class ChurchToolsClientError extends Error {
@@ -27,12 +57,7 @@ export class ChurchToolsHttpError extends ChurchToolsClientError {
   readonly url: string;
   readonly method: string;
 
-  constructor(params: {
-    response: Response;
-    url: string;
-    method?: string;
-    cause?: unknown;
-  }) {
+  constructor(params: ChurchToolsHttpErrorParams) {
     const method = params.method ?? 'GET';
     const status = params.response.status;
     super(
@@ -55,12 +80,7 @@ export class ChurchToolsRequestError extends ChurchToolsClientError {
   readonly url: string;
   readonly method: string;
 
-  constructor(params: {
-    message: string;
-    url: string;
-    method?: string;
-    cause?: unknown;
-  }) {
+  constructor(params: ChurchToolsRequestFailureParams) {
     super('REQUEST_ERROR', params.message, params.cause);
     this.name = 'ChurchToolsRequestError';
     this.url = params.url;
@@ -76,12 +96,7 @@ export class ChurchToolsTimeoutError extends ChurchToolsClientError {
   readonly url: string;
   readonly method: string;
 
-  constructor(params: {
-    timeoutMs: number;
-    url: string;
-    method?: string;
-    cause?: unknown;
-  }) {
+  constructor(params: ChurchToolsTimeoutErrorParams) {
     const method = params.method ?? 'GET';
     super(
       'TIMEOUT',

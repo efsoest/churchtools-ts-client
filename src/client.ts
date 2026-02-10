@@ -5,7 +5,14 @@ import {
   type FetchLike,
 } from './core/transport';
 
+/**
+ * Primitive value supported by query parameter serialization.
+ */
 type QueryPrimitive = string | number | boolean | null | undefined;
+
+/**
+ * Nested query object shape used by generated API classes.
+ */
 interface HTTPQuery {
   [key: string]:
     | QueryPrimitive
@@ -13,19 +20,35 @@ interface HTTPQuery {
     | Set<QueryPrimitive>
     | HTTPQuery;
 }
+
+/**
+ * Flat object shape expected by generated runtime headers.
+ */
 type HTTPHeaders = Record<string, string>;
 
+/**
+ * Supported shapes for API key authentication configuration.
+ */
 type ApiKeyConfig =
   | string
   | Promise<string>
   | ((name: string) => string | Promise<string>);
 
+/**
+ * Supported shapes for access token authentication configuration.
+ */
 type AccessTokenConfig =
   | string
   | Promise<string>
   | ((name?: string, scopes?: string[]) => string | Promise<string>);
 
-type ChurchToolsRuntimeConfiguration = {
+/**
+ * Runtime config shape consumed by generated API classes.
+ *
+ * We keep this local type instead of importing generated runtime types directly,
+ * so the handwritten layer stays decoupled from generated type strictness.
+ */
+export type ChurchToolsRuntimeConfiguration = {
   basePath: string;
   fetchApi: FetchLike;
   middleware: ChurchToolsMiddleware[];
@@ -36,19 +59,61 @@ type ChurchToolsRuntimeConfiguration = {
   accessToken?: (name?: string, scopes?: string[]) => string | Promise<string>;
 };
 
+/**
+ * Configuration accepted by `ChurchToolsClient`.
+ */
 export type ChurchToolsClientConfig = {
+  /**
+   * ChurchTools base URL without trailing slash, e.g. `https://example.church.tools`.
+   */
   baseUrl: string;
+  /**
+   * Optional fetch implementation override.
+   */
   fetch?: FetchLike;
+  /**
+   * Timeout for every request in milliseconds.
+   *
+   * Default: `15000`.
+   */
   timeoutMs?: number;
+  /**
+   * Default headers sent with every generated API request.
+   */
   headers?: HeadersInit;
+  /**
+   * Fetch credentials mode for every request.
+   */
   credentials?: RequestCredentials;
+  /**
+   * API key source used by generated runtime auth handling.
+   */
   apiKey?: ApiKeyConfig;
+  /**
+   * Access token source used by generated runtime auth handling.
+   */
   accessToken?: AccessTokenConfig;
+  /**
+   * Transport middleware hooks executed around every request.
+   */
   middleware?: ChurchToolsMiddleware[];
 };
 
-export type ChurchToolsApiConstructor<TApi> = new (configuration?: any) => TApi;
+/**
+ * Constructor contract for generated API classes.
+ */
+export type ChurchToolsApiConstructor<TApi> = new (
+  configuration?: unknown,
+) => TApi;
 
+/**
+ * Main entrypoint for consumers of the ChurchTools client package.
+ *
+ * Responsibilities:
+ * - normalize base configuration
+ * - create a wrapped fetch transport with middleware + timeout + error handling
+ * - provide runtime configuration for generated API classes
+ */
 export class ChurchToolsClient {
   readonly #baseUrl: string;
   readonly #fetch: FetchLike;
@@ -62,66 +127,96 @@ export class ChurchToolsClient {
 
     this.#baseUrl = config.baseUrl.replace(/\/+$/, '');
     this.#timeoutMs = config.timeoutMs ?? 15_000;
-
-    const transportConfig: ChurchToolsTransportConfig = {
-      fetchApi: config.fetch ?? fetch,
-      timeoutMs: this.#timeoutMs,
-    };
-    if (config.middleware) {
-      transportConfig.middleware = config.middleware;
-    }
-    this.#fetch = createTransportFetch(transportConfig);
-
-    const runtimeConfig: ChurchToolsRuntimeConfiguration = {
-      basePath: `${this.#baseUrl}/api`,
+    this.#fetch = createClientFetch(config, this.#timeoutMs);
+    this.#configuration = createRuntimeConfiguration(config, {
+      baseUrl: this.#baseUrl,
       fetchApi: this.#fetch,
-      middleware: [],
-      queryParamsStringify: querystring,
-    };
-
-    const runtimeHeaders = toHttpHeaders(config.headers);
-    if (runtimeHeaders) {
-      runtimeConfig.headers = runtimeHeaders;
-    }
-    if (config.credentials !== undefined) {
-      runtimeConfig.credentials = config.credentials;
-    }
-    if (config.apiKey !== undefined) {
-      runtimeConfig.apiKey = asApiKeyResolver(config.apiKey);
-    }
-    if (config.accessToken !== undefined) {
-      runtimeConfig.accessToken = asAccessTokenResolver(config.accessToken);
-    }
-
-    this.#configuration = runtimeConfig;
+    });
   }
 
+  /**
+   * Normalized base URL without trailing slash.
+   */
   get baseUrl(): string {
     return this.#baseUrl;
   }
 
+  /**
+   * Active request timeout in milliseconds.
+   */
   get timeoutMs(): number {
     return this.#timeoutMs;
   }
 
+  /**
+   * Wrapped fetch implementation used by generated APIs.
+   */
   get fetchImpl(): FetchLike {
     return this.#fetch;
   }
 
   /**
-   * Low-level runtime configuration passed to generated API classes.
+   * Low-level runtime configuration that can be reused directly if needed.
    */
   get configuration(): ChurchToolsRuntimeConfiguration {
     return this.#configuration;
   }
 
   /**
-   * Creates any generated API class with the configured core transport pipeline.
+   * Instantiates a generated API class with the client runtime configuration.
+   *
+   * Example:
+   * `const personApi = client.api(PersonApi)`.
    */
   api<TApi>(ApiClass: ChurchToolsApiConstructor<TApi>): TApi {
     return new ApiClass(this.#configuration);
   }
 }
+
+const createClientFetch = (
+  config: ChurchToolsClientConfig,
+  timeoutMs: number,
+): FetchLike => {
+  const transportConfig: ChurchToolsTransportConfig = {
+    fetchApi: config.fetch ?? fetch,
+    timeoutMs,
+  };
+  if (config.middleware) {
+    transportConfig.middleware = config.middleware;
+  }
+  return createTransportFetch(transportConfig);
+};
+
+const createRuntimeConfiguration = (
+  config: ChurchToolsClientConfig,
+  params: {
+    baseUrl: string;
+    fetchApi: FetchLike;
+  },
+): ChurchToolsRuntimeConfiguration => {
+  const runtimeConfig: ChurchToolsRuntimeConfiguration = {
+    basePath: `${params.baseUrl}/api`,
+    fetchApi: params.fetchApi,
+    middleware: [],
+    queryParamsStringify: querystring,
+  };
+
+  const runtimeHeaders = toHttpHeaders(config.headers);
+  if (runtimeHeaders) {
+    runtimeConfig.headers = runtimeHeaders;
+  }
+  if (config.credentials !== undefined) {
+    runtimeConfig.credentials = config.credentials;
+  }
+  if (config.apiKey !== undefined) {
+    runtimeConfig.apiKey = asApiKeyResolver(config.apiKey);
+  }
+  if (config.accessToken !== undefined) {
+    runtimeConfig.accessToken = asAccessTokenResolver(config.accessToken);
+  }
+
+  return runtimeConfig;
+};
 
 const asApiKeyResolver = (
   apiKey: ApiKeyConfig,
@@ -141,6 +236,9 @@ const asAccessTokenResolver = (
   return async () => accessToken;
 };
 
+/**
+ * Converts any `HeadersInit` shape to a plain object expected by generated runtime.
+ */
 const toHttpHeaders = (
   headers: HeadersInit | undefined,
 ): HTTPHeaders | undefined => {
@@ -156,6 +254,9 @@ const toHttpHeaders = (
   return asObject;
 };
 
+/**
+ * Query serializer compatible with the generated runtime expectations.
+ */
 const querystring = (params: HTTPQuery, prefix = ''): string => {
   return Object.keys(params)
     .map((key) => querystringSingleKey(key, params[key], prefix))
@@ -175,10 +276,10 @@ const querystringSingleKey = (
   }
 
   if (Array.isArray(value)) {
-    const encoded = value
+    const encodedValues = value
       .map((single) => encodeURIComponent(String(single)))
       .join(`&${encodeURIComponent(fullKey)}=`);
-    return `${encodeURIComponent(fullKey)}=${encoded}`;
+    return `${encodeURIComponent(fullKey)}=${encodedValues}`;
   }
 
   if (value instanceof Set) {
