@@ -1,0 +1,34 @@
+{
+  "name": "churchtools-ts-client",
+  "version": "0.1.0",
+  "description": "Type-safe ChurchTools API client",
+  "license": "Apache-2.0",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "generate": "bun run scripts/generate-api.ts"
+  },
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "latest",
+    "@types/bun": "latest",
+    "tsup": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
+  }
+}
