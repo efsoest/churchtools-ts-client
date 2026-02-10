@@ -54,9 +54,9 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - [x] Unit-Tests fuer Auth-, Session- und Rate-Limit-Flow erstellen.
 - [ ] Mock-gestuetzte Integrationstests fuer Kernpfade erstellen.
 - [x] OWASP-Top-10-orientierten Security-Audit fuer handgeschriebenen Core-Code durchfuehren.
-- [ ] Security-Hardening aus Audit-Findings umsetzen (CSRF-Origin-Guard, Cookie-Credentials-Respect, Host-only-Cookies).
-- [ ] Security-relevante Code-Stellen mit klaren Security-Kommentaren/JSDoc markieren und Begruendung dokumentieren.
-- [ ] Security-Regressionstests fuer alle behobenen Findings ergaenzen.
+- [x] Security-Hardening aus Audit-Findings umsetzen (CSRF-Origin-Guard, Cookie-Credentials-Respect, Host-only-Cookies).
+- [x] Security-relevante Code-Stellen mit klaren Security-Kommentaren/JSDoc markieren und Begruendung dokumentieren.
+- [x] Security-Regressionstests fuer alle behobenen Findings ergaenzen.
 - [x] Strict Typecheck, Build und Test lokal gruen.
 
 ### Phase 5: Distribution
@@ -67,7 +67,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 4: Finding 3 umsetzen (Host-only-Cookie-Semantik) inkl. Security-Tests`
+`Phase 4: Mock-gestuetzte Integrationstests fuer Kernpfade aufsetzen`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
@@ -95,6 +95,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 3. Host-only-Cookie-Semantik RFC-konform abbilden (niedrig)
 - Finding: Cookies ohne `Domain`-Attribut koennen aktuell wie Domain-Cookies wirken.
+- Status: [x] umgesetzt
 - Behebung:
   - In `src/core/cookies.ts` Cookie-Model um `hostOnly` erweitern.
   - Bei fehlendem `Domain`-Attribut `hostOnly = true`; Match nur bei exaktem Host.
@@ -124,6 +125,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Security-Audit (OWASP-Top-10-orientiert) ueber den handgeschriebenen Layer durchgefuehrt; drei priorisierte Findings dokumentiert und als Security-Hardening-Backlog in diesem Plan aufgenommen.
 - 2026-02-10: Security-Hardening Finding 1 umgesetzt: CSRF-Middleware mit explizitem Same-Origin-Guard abgesichert (security-relevante Code-Markierung in `src/core/csrf.ts`) und Security-Regressionstest fuer Cross-Origin-POST in `tests/core/csrf.test.ts` ergaenzt.
 - 2026-02-10: Security-Hardening Finding 2 umgesetzt: Cookie-Middleware respektiert `credentials: 'omit'` strikt in Pre/Post-Hook (security-relevante Code-Markierungen in `src/core/cookies.ts`) und Security-Regressionstests fuer Header-Injektion/Persistierung in `tests/core/cookies.test.ts` ergaenzt.
+- 2026-02-10: Security-Hardening Finding 3 umgesetzt: RFC-konforme host-only/domain-cookie Trennung im InMemoryCookieStore eingefuehrt (security-relevante Code-Markierungen in `src/core/cookies.ts`) und Security-Regressionstests fuer Subdomain-Verhalten in `tests/core/cookies.test.ts` ergaenzt.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
