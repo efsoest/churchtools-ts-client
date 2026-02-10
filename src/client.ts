@@ -11,10 +11,10 @@ export class ChurchToolsClient {
 
   constructor(config: ChurchToolsClientConfig) {
     if (!config.baseUrl) {
-      throw new Error("`baseUrl` is required.");
+      throw new Error('`baseUrl` is required.');
     }
 
-    this.#baseUrl = config.baseUrl.replace(/\/+$/, "");
+    this.#baseUrl = config.baseUrl.replace(/\/+$/, '');
     this.#fetch = config.fetch ?? fetch;
     this.#timeoutMs = config.timeoutMs ?? 15_000;
   }
