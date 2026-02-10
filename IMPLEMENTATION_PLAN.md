@@ -53,6 +53,10 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 - [x] Unit-Tests fuer Auth-, Session- und Rate-Limit-Flow erstellen.
 - [ ] Mock-gestuetzte Integrationstests fuer Kernpfade erstellen.
+- [x] OWASP-Top-10-orientierten Security-Audit fuer handgeschriebenen Core-Code durchfuehren.
+- [ ] Security-Hardening aus Audit-Findings umsetzen (CSRF-Origin-Guard, Cookie-Credentials-Respect, Host-only-Cookies).
+- [ ] Security-relevante Code-Stellen mit klaren Security-Kommentaren/JSDoc markieren und Begruendung dokumentieren.
+- [ ] Security-Regressionstests fuer alle behobenen Findings ergaenzen.
 - [x] Strict Typecheck, Build und Test lokal gruen.
 
 ### Phase 5: Distribution
@@ -63,7 +67,40 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 4: Mock-gestuetzte Integrationstests fuer Kernpfade aufsetzen`
+`Phase 4: Security-Hardening aus Audit-Findings umsetzen und mit Security-Tests absichern`
+
+## Security Findings und Behebungsplan (Stand 2026-02-10)
+
+1. CSRF-Token darf nicht an fremde Origins gesendet werden (hoch)
+- Finding: CSRF-Middleware injiziert Token aktuell methodenbasiert, ohne harte Origin-Pruefung.
+- Behebung:
+  - In `src/core/csrf.ts` vor Token-Aufloesung und Header-Injektion zwingend Same-Origin (`request.origin === base.origin`) pruefen.
+  - Cross-origin Requests explizit vom CSRF-Handling ausschliessen.
+  - Security-Markierung im Code: Kommentar/JSDoc, warum Origin-Guard zwingend ist (Token-Leak-Praevention).
+- Tests:
+  - Neuer Test in `tests/core/csrf.test.ts`: Cross-origin `POST` darf keinen CSRF-Token laden/injizieren.
+  - Negativtest: Same-origin `POST` behaelt bestehendes Verhalten.
+
+2. Cookie-Middleware muss `credentials: 'omit'` respektieren (mittel)
+- Finding: Cookie-Header wird aktuell auch dann injiziert, wenn Request explizit keine Credentials senden soll.
+- Behebung:
+  - In `src/core/cookies.ts` im `pre`-Hook bei `credentials === 'omit'` keine Cookie-Injektion.
+  - Optional im `post`-Hook bei `credentials === 'omit'` keine Session-Persistierung aus `Set-Cookie`.
+  - Security-Markierung im Code: Kommentar/JSDoc, dass `omit` eine explizite Sicherheits-/Privacy-Intention des Callers ist.
+- Tests:
+  - Neuer Test in `tests/core/cookies.test.ts`: bei `credentials: 'omit'` wird kein `Cookie`-Header gesetzt.
+  - Optionaler Test: `Set-Cookie` wird in diesem Modus nicht gespeichert.
+
+3. Host-only-Cookie-Semantik RFC-konform abbilden (niedrig)
+- Finding: Cookies ohne `Domain`-Attribut koennen aktuell wie Domain-Cookies wirken.
+- Behebung:
+  - In `src/core/cookies.ts` Cookie-Model um `hostOnly` erweitern.
+  - Bei fehlendem `Domain`-Attribut `hostOnly = true`; Match nur bei exaktem Host.
+  - Bei vorhandenem `Domain`-Attribut weiterhin Domain-Matching fuer Subdomains.
+  - Security-Markierung im Code: Kommentar/JSDoc zur Trennung host-only vs. domain-cookie.
+- Tests:
+  - Neuer Test in `tests/core/cookies.test.ts`: host-only Cookie wird nicht an Subdomain gesendet.
+  - Neuer Test: Domain-Cookie (mit `Domain=`) wird weiterhin an passende Subdomain gesendet.
 
 ## Arbeitslog
 
@@ -82,6 +119,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: CSRF-Middleware fuer mutierende Requests implementiert (`/api/csrftoken`-Abruf, Header-Injektion, Refresh nach Session-Retry) und per Bun-Tests abgesichert.
 - 2026-02-10: README auf klassische Projektdoku umgestellt (Setup, Nutzung, Scripts, Repo-Workflow); Planungs-/TODO-Inhalte leben ausschliesslich in diesem Implementierungsplan.
 - 2026-02-10: Runtime-agnostisches Cookie-/Session-Konzept eingefuehrt (Cookie-Middleware + InMemoryCookieStore, Browser-Auto-Bypass, manuelles Mode-Override) und per Bun-Tests abgesichert.
+- 2026-02-10: Security-Audit (OWASP-Top-10-orientiert) ueber den handgeschriebenen Layer durchgefuehrt; drei priorisierte Findings dokumentiert und als Security-Hardening-Backlog in diesem Plan aufgenommen.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
