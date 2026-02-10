@@ -67,12 +67,13 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 4: Security-Hardening aus Audit-Findings umsetzen und mit Security-Tests absichern`
+`Phase 4: Finding 2 umsetzen (Cookie-Middleware: credentials=omit respektieren) inkl. Security-Test`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
 1. CSRF-Token darf nicht an fremde Origins gesendet werden (hoch)
 - Finding: CSRF-Middleware injiziert Token aktuell methodenbasiert, ohne harte Origin-Pruefung.
+- Status: [x] umgesetzt
 - Behebung:
   - In `src/core/csrf.ts` vor Token-Aufloesung und Header-Injektion zwingend Same-Origin (`request.origin === base.origin`) pruefen.
   - Cross-origin Requests explizit vom CSRF-Handling ausschliessen.
@@ -120,6 +121,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: README auf klassische Projektdoku umgestellt (Setup, Nutzung, Scripts, Repo-Workflow); Planungs-/TODO-Inhalte leben ausschliesslich in diesem Implementierungsplan.
 - 2026-02-10: Runtime-agnostisches Cookie-/Session-Konzept eingefuehrt (Cookie-Middleware + InMemoryCookieStore, Browser-Auto-Bypass, manuelles Mode-Override) und per Bun-Tests abgesichert.
 - 2026-02-10: Security-Audit (OWASP-Top-10-orientiert) ueber den handgeschriebenen Layer durchgefuehrt; drei priorisierte Findings dokumentiert und als Security-Hardening-Backlog in diesem Plan aufgenommen.
+- 2026-02-10: Security-Hardening Finding 1 umgesetzt: CSRF-Middleware mit explizitem Same-Origin-Guard abgesichert (security-relevante Code-Markierung in `src/core/csrf.ts`) und Security-Regressionstest fuer Cross-Origin-POST in `tests/core/csrf.test.ts` ergaenzt.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
