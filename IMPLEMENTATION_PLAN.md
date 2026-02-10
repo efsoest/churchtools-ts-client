@@ -68,11 +68,11 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 ### Phase 6: Runtime-Validierung
 
 - [x] Reproduzierbaren manuellen End-to-End-Smoke-Test fuer reale ChurchTools-Instanzen bereitstellen.
-- [ ] Smoke-Test gegen Zielinstanz ausfuehren und Ergebnisprotokoll dokumentieren.
+- [x] Smoke-Test gegen Zielinstanz ausfuehren und Ergebnisprotokoll dokumentieren.
 
 ## Aktueller Schritt
 
-`Phase 6: Smoke-Test gegen Zielinstanz ausfuehren und Ergebnisprotokoll dokumentieren`
+`Abgeschlossen: Implementierungsplan-Phasen 0-6`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
@@ -140,6 +140,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: README um praxisnahe Consumer-Beispiele erweitert (Grundnutzung, erweiterte Konfiguration, typisierte Fehlerbehandlung) sowie Migrationshinweise vom Legacy-Client auf den neuen API-/Middleware-Ansatz dokumentiert.
 - 2026-02-10: Ziel-Architektur und oeffentliche API-Oberflaeche verbindlich in `ARCHITECTURE.md` dokumentiert und im README verlinkt.
 - 2026-02-10: Manuellen End-to-End-Smoke-Test (`scripts/smoke-e2e.ts`) eingefuehrt und in README dokumentiert (`bun run smoke:e2e`, erforderliche `CT_*`-Variablen, validierte Pipeline-Invarianten fuer Auth/Cookie/CSRF).
+- 2026-02-10: Smoke-Test erfolgreich gegen `https://efss.church.tools` ausgefuehrt (`bun run smoke:e2e` mit `.env`): `GET /api/csrftoken -> 200`, `GET /api/whoami -> 200`, `POST /api/whoami -> 405` (erwartbar fuer diese Probe), alle Pipeline-Checks bestanden (`checks passed`, inkl. whoami-Bridge, Cookie- und CSRF-Injektion).
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 
