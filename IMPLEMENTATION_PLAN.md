@@ -63,11 +63,11 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 - [x] Package-Exports fuer ESM/CJS/Types finalisieren.
 - [x] Release-Workflow fuer npm (Tag-basierte Publizierung) einrichten.
-- [ ] Nutzungsbeispiele und Migrationshinweise dokumentieren.
+- [x] Nutzungsbeispiele und Migrationshinweise dokumentieren.
 
 ## Aktueller Schritt
 
-`Phase 5: Nutzungsbeispiele und Migrationshinweise dokumentieren`
+`Phase 0: Ziel-Architektur und API-Oberflaeche schriftlich finalisieren`
 
 ## Security Findings und Behebungsplan (Stand 2026-02-10)
 
@@ -132,6 +132,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Mock-gestuetzte Integrationstests fuer die kombinierte Core-Pipeline (`auth + cookies + csrf + 429`) in `tests/integration/core-pipeline.test.ts` ergaenzt; dabei zwei Integrationsluecken geschlossen (CSRF-Refresh trotz vorhandenem Header bei Session-Retry, Entfernen stale Cookie-Header im Auth-Retry-Pfad).
 - 2026-02-10: Package-Distribution finalisiert: stabiler Subpath-Export `churchtools-ts-client/generated` eingefuehrt, Build auf duale Entry-Points (`index`, `generated/index`) umgestellt, README-Nutzungsbeispiel auf Package-Imports aktualisiert; Build/Typecheck/Tests sind gruen.
 - 2026-02-10: npm-Release-Workflow eingerichtet (`.github/workflows/release.yml`): Tag-Trigger `v*`, Versionsabgleich Tag vs. `package.json`, Quality-Gates (format/typecheck/test/build) und anschliessendes `npm publish` via `NPM_TOKEN`.
+- 2026-02-10: README um praxisnahe Consumer-Beispiele erweitert (Grundnutzung, erweiterte Konfiguration, typisierte Fehlerbehandlung) sowie Migrationshinweise vom Legacy-Client auf den neuen API-/Middleware-Ansatz dokumentiert.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 

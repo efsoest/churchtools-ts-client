@@ -120,6 +120,77 @@ const personApi = client.api(PersonApi);
 
 Im Repo waehrend der Entwicklung kannst du alternativ direkt aus `src/` importieren.
 
+### Fehlerbehandlung
+
+```ts
+import {
+  ChurchToolsClient,
+  ChurchToolsHttpError,
+  ChurchToolsRequestError,
+  ChurchToolsTimeoutError,
+} from 'churchtools-ts-client';
+
+const client = new ChurchToolsClient({
+  baseUrl: 'https://example.church.tools',
+  timeoutMs: 15000,
+});
+
+try {
+  await client.fetchImpl('https://example.church.tools/api/whoami');
+} catch (error) {
+  if (error instanceof ChurchToolsHttpError) {
+    console.error('HTTP Fehler', error.status, error.url);
+  } else if (error instanceof ChurchToolsTimeoutError) {
+    console.error('Timeout', error.timeoutMs, error.url);
+  } else if (error instanceof ChurchToolsRequestError) {
+    console.error('Transportfehler', error.message);
+  }
+}
+```
+
+### Erweiterte Konfiguration
+
+```ts
+import { ChurchToolsClient } from 'churchtools-ts-client';
+
+const client = new ChurchToolsClient({
+  baseUrl: 'https://example.church.tools',
+  loginToken: process.env.CT_LOGIN_TOKEN,
+  forceSession: true,
+  timeoutMs: 15000,
+  cookies: { mode: 'manual' },
+  csrf: {},
+  rateLimit: {
+    maxRetries: 1,
+    baseDelayMs: 30000,
+  },
+});
+```
+
+## Migration von `churchtools-js-client` (Legacy)
+
+1. Initialisierung
+   Legacy: `new ChurchToolsClient(baseUrl, loginToken, loadCSRFForOldApi)`
+   Neu: `new ChurchToolsClient({ baseUrl, loginToken, csrf: {} })`
+2. Force-Session
+   Legacy: `setForceSession(true)`
+   Neu: `new ChurchToolsClient({ ..., forceSession: true })`
+3. Timeout
+   Legacy: `setRequestTimeout(ms)`
+   Neu: `new ChurchToolsClient({ ..., timeoutMs: ms })`
+4. Rate-Limit
+   Legacy: `setRateLimitTimeout(ms)`
+   Neu: `new ChurchToolsClient({ ..., rateLimit: { baseDelayMs: ms } })`
+5. Request-Aufrufe
+   Legacy: proprietaere Helper wie `oldApi(module, func, params)`
+   Neu: generierte API-Klassen via `client.api(...)` und OpenAPI-Operations
+6. Fehlerverhalten
+   Legacy: Axios-/Interceptor-Fehlerbilder
+   Neu: klar typisierte Fehler (`ChurchToolsHttpError`, `ChurchToolsTimeoutError`, `ChurchToolsRequestError`)
+7. Middleware/Hooking
+   Legacy: direkte Axios-Interceptors
+   Neu: Transport-Middleware ueber `ChurchToolsClientConfig.middleware`
+
 ## Referenz
 
 Funktionale Referenz für ChurchTools-Spezifika war der offizielle JavaScript Client in https://github.com/churchtools/churchtools-js-client.
