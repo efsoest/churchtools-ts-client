@@ -66,6 +66,31 @@ describe('core cookie middleware', () => {
     expect(cookieHeader).toBeUndefined();
   });
 
+  test('does not send host-only cookies to subdomains', async () => {
+    const store = new InMemoryCookieStore();
+    await store.setCookies('https://example.test/api/whoami', [
+      'ct_session=host-only; Path=/; HttpOnly',
+    ]);
+
+    expect(
+      await store.getCookieHeader('https://example.test/api/persons'),
+    ).toContain('ct_session=host-only');
+    expect(
+      await store.getCookieHeader('https://sub.example.test/api/persons'),
+    ).toBeUndefined();
+  });
+
+  test('sends domain cookies to matching subdomains', async () => {
+    const store = new InMemoryCookieStore();
+    await store.setCookies('https://example.test/api/whoami', [
+      'ct_session=domain-cookie; Domain=.example.test; Path=/; HttpOnly',
+    ]);
+
+    expect(
+      await store.getCookieHeader('https://sub.example.test/api/persons'),
+    ).toContain('ct_session=domain-cookie');
+  });
+
   test('does not override explicit cookie header', async () => {
     const store = new InMemoryCookieStore();
     await store.setCookies('https://example.test/api/whoami', [

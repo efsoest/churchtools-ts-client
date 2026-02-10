@@ -6,6 +6,10 @@ type StoredCookie = {
   name: string;
   value: string;
   domain: string;
+  /**
+   * Host-only cookies (no Domain attribute) must be sent only to the exact host.
+   */
+  hostOnly: boolean;
   path: string;
   secure: boolean;
   expiresAt?: number;
@@ -59,7 +63,7 @@ export class InMemoryCookieStore implements ChurchToolsCookieStore {
         this.#cookies.delete(key);
         continue;
       }
-      if (!domainMatches(requestUrl.hostname, cookie.domain)) {
+      if (!domainMatches(requestUrl.hostname, cookie)) {
         continue;
       }
       if (!pathMatches(requestUrl.pathname, cookie.path)) {
@@ -301,6 +305,7 @@ const parseSetCookie = (
     name,
     value,
     domain: requestUrl.hostname.toLowerCase(),
+    hostOnly: true,
     path: defaultCookiePath(requestUrl.pathname),
     secure: false,
   };
@@ -320,6 +325,12 @@ const parseSetCookie = (
       case 'domain':
         if (attributeValue.length > 0) {
           cookie.domain = normalizeDomain(attributeValue);
+          /**
+           * Security-relevant scope separation:
+           * explicit Domain creates a domain-cookie (subdomains allowed),
+           * missing Domain keeps the cookie host-only.
+           */
+          cookie.hostOnly = false;
         }
         break;
       case 'path':
@@ -372,14 +383,21 @@ const defaultCookiePath = (pathname: string): string => {
 };
 
 const getCookieStorageKey = (cookie: StoredCookie): string =>
-  `${cookie.domain}|${cookie.path}|${cookie.name}`;
+  `${cookie.domain}|${cookie.hostOnly ? 'host' : 'domain'}|${cookie.path}|${cookie.name}`;
 
 const isExpired = (cookie: StoredCookie, now: number): boolean =>
   cookie.expiresAt !== undefined && cookie.expiresAt <= now;
 
-const domainMatches = (host: string, domain: string): boolean => {
+const domainMatches = (host: string, cookie: StoredCookie): boolean => {
   const normalizedHost = host.toLowerCase();
-  const normalizedDomain = normalizeDomain(domain);
+  const normalizedDomain = normalizeDomain(cookie.domain);
+  /**
+   * Security-critical behavior:
+   * host-only cookies must never be sent to subdomains.
+   */
+  if (cookie.hostOnly) {
+    return normalizedHost === normalizedDomain;
+  }
   return (
     normalizedHost === normalizedDomain ||
     normalizedHost.endsWith(`.${normalizedDomain}`)
