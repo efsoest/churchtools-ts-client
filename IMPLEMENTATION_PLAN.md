@@ -47,13 +47,13 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - [x] Session-Recovery fuer `401` und `200 + { message: "Session expired!" }` implementieren.
 - [x] Rate-Limit-Recovery fuer `429` mit Backoff implementieren.
 - [x] CSRF-Flow fuer mutierende Requests und Upload-Sonderfaelle implementieren.
-- [ ] Runtime-agnostisches Cookie/Session-Konzept fuer Browser/Node/Bun definieren.
+- [x] Runtime-agnostisches Cookie/Session-Konzept fuer Browser/Node/Bun definieren.
 
 ### Phase 4: Qualitaet
 
 - [x] Unit-Tests fuer Auth-, Session- und Rate-Limit-Flow erstellen.
 - [ ] Mock-gestuetzte Integrationstests fuer Kernpfade erstellen.
-- [ ] Strict Typecheck, Build und Test lokal gruen.
+- [x] Strict Typecheck, Build und Test lokal gruen.
 
 ### Phase 5: Distribution
 
@@ -63,7 +63,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 3: Runtime-agnostisches Cookie/Session-Konzept fuer Browser/Node/Bun definieren`
+`Phase 4: Mock-gestuetzte Integrationstests fuer Kernpfade aufsetzen`
 
 ## Arbeitslog
 
@@ -81,6 +81,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Rate-Limit-Recovery fuer `429` implementiert (Retry-After + Backoff + Jitter, konfigurierbar im Client) und per Bun-Tests abgesichert.
 - 2026-02-10: CSRF-Middleware fuer mutierende Requests implementiert (`/api/csrftoken`-Abruf, Header-Injektion, Refresh nach Session-Retry) und per Bun-Tests abgesichert.
 - 2026-02-10: README auf klassische Projektdoku umgestellt (Setup, Nutzung, Scripts, Repo-Workflow); Planungs-/TODO-Inhalte leben ausschliesslich in diesem Implementierungsplan.
+- 2026-02-10: Runtime-agnostisches Cookie-/Session-Konzept eingefuehrt (Cookie-Middleware + InMemoryCookieStore, Browser-Auto-Bypass, manuelles Mode-Override) und per Bun-Tests abgesichert.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 

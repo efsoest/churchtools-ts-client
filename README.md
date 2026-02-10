@@ -34,6 +34,7 @@ Hinweis: Nach einer neuen Spec immer die komplette Generierungs-Pipeline laufen 
   - `401`
   - `200` mit `{ "message": "Session expired!" }`
 - Automatischer `X-OnlyAuthenticated`-Header
+- Runtime-agnostisches Cookie-/Session-Handling (Cookie-Middleware mit Store-Abstraktion)
 - Rate-Limit-Recovery für `429` (`Retry-After` + konfigurierbares Backoff)
 - CSRF-Handling für mutierende Requests via `/api/csrftoken`
 
