@@ -66,6 +66,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Build (`bun run build`), Typecheck (`bun run typecheck`) und Test-Runner (`bun run test`) fuer den handgeschriebenen Layer sind gruen; Generated-Code ist temporaer vom Root-Typecheck ausgeschlossen, bis die Generator-Strategie final ist.
 - 2026-02-10: Prettier mit einheitlicher Konfiguration eingefuehrt (`singleQuote: true`, `trailingComma: all`), Format-Skripte (`format:check`, `format:write`) angelegt und einmal projektweit ausgefuehrt.
 - 2026-02-10: Stabile Generator-Pipeline eingefuehrt (`generate:all = generate -> postprocess:generated -> typecheck:generated`) inkl. automatischer Fixes fuer bekannte OpenAPI-Generator-Inkompatibilitaeten.
+- 2026-02-10: Test-Setup von `Vitest` auf integriertes `bun test` umgestellt, um Abhaengigkeiten zu reduzieren.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 

@@ -15,7 +15,7 @@ Entwicklung einer modernen, typsicheren TypeScript-Library zur Interaktion mit d
 - **Sprache:** TypeScript (Strict Mode).
 - **Code-Generierung:** `@openapitools/openapi-generator-cli` mit dem `typescript-fetch` Generator.
 - **Bundling:** `tsup` (für ESM, CJS und d.ts Exporte).
-- **Testing:** `Vitest`.
+- **Testing:** integriertes `bun test`.
 
 ### 2.1 Generierungs-Pipeline (Ist-Stand)
 

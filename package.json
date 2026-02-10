@@ -21,8 +21,8 @@
     "build": "tsup",
     "typecheck": "tsc --noEmit",
     "typecheck:generated": "tsc --project tsconfig.generated.json --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest",
+    "test": "bun test --pass-with-no-tests",
+    "test:watch": "bun test --watch",
     "generate": "bun run scripts/generate-api.ts",
     "postprocess:generated": "bun run scripts/postprocess-generated.ts",
     "generate:all": "bun run generate && bun run postprocess:generated && bun run typecheck:generated",
@@ -34,7 +34,6 @@
     "@types/bun": "^1.3.8",
     "prettier": "^3.8.1",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "typescript": "^5.9.3"
   }
 }
