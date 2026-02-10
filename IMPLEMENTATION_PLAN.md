@@ -35,7 +35,8 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ### Phase 3: Core-Client
 
-- [ ] `ChurchToolsClient` als handgeschriebene Facade auf den Generated Layer aufbauen.
+- [x] Core-Transport-Layer (Middleware, Timeout, Fehlernormalisierung) implementieren.
+- [x] `ChurchToolsClient` als handgeschriebene Facade auf den Generated Layer aufbauen.
 - [ ] Token-to-Session-Bridge (`/whoami?login_token=...`) implementieren.
 - [ ] Session-Recovery fuer `401` und `200 + { message: "Session expired!" }` implementieren.
 - [ ] Rate-Limit-Recovery fuer `429` mit Backoff implementieren.
@@ -56,7 +57,7 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 
 ## Aktueller Schritt
 
-`Phase 3: Ziel-Architektur des Smart Clients finalisieren und Core-Bausteine aufsetzen`
+`Phase 3: Auth-/Session-Layer auf den Core-Transport aufsetzen (whoami + Session-Recovery)`
 
 ## Arbeitslog
 
@@ -67,6 +68,8 @@ Ein langlebiger, typsicherer TypeScript-Client fuer ChurchTools mit minimalen Ab
 - 2026-02-10: Prettier mit einheitlicher Konfiguration eingefuehrt (`singleQuote: true`, `trailingComma: all`), Format-Skripte (`format:check`, `format:write`) angelegt und einmal projektweit ausgefuehrt.
 - 2026-02-10: Stabile Generator-Pipeline eingefuehrt (`generate:all = generate -> postprocess:generated -> typecheck:generated`) inkl. automatischer Fixes fuer bekannte OpenAPI-Generator-Inkompatibilitaeten.
 - 2026-02-10: Test-Setup von `Vitest` auf integriertes `bun test` umgestellt, um Abhaengigkeiten zu reduzieren.
+- 2026-02-10: Core-Transport eingefuehrt (Middleware-Hooks, Timeout via AbortController, Fehlernormalisierung) und per Bun-Tests abgesichert.
+- 2026-02-10: `ChurchToolsClient` auf Core-Transport umgestellt und API-Facade (`client.api(...)`) fuer Generated APIs eingefuehrt.
 
 ## Erkenntnisse aus Legacy-Referenz (fuer Umsetzung verbindlich)
 

@@ -63,6 +63,16 @@ Basierend auf der Analyse des offiziellen Clients muss die Library folgende Logi
 - **Header-Management:** Automatisches Setzen des `X-OnlyAuthenticated: 1` Headers.
 - **Session-Recovery:** Interceptor, der auf `401 Unauthorized` reagiert ODER auf `200 OK` mit dem JSON-Inhalt `{ message: 'Session expired!' }`.
 
+### C. Aktueller Core-Stand
+
+Bereits implementiert ist ein runtime-agnostischer Core-Transport-Layer (`src/core/transport.ts`) mit:
+
+1. **Middleware-Hooks:** `pre`, `post`, `onError`.
+2. **Timeout-Steuerung:** pro Request über `AbortController`.
+3. **Fehlernormalisierung:** eigene Fehlertypen (`ChurchToolsHttpError`, `ChurchToolsTimeoutError`, `ChurchToolsRequestError`).
+
+Der `ChurchToolsClient` nutzt diesen Transport bereits als Basis und kann damit generierte API-Klassen über `client.api(...)` instanziieren.
+
 ## 4. Implementierungs-Phasen (TODO-Liste)
 
 ### Phase 1: Projekt-Setup
