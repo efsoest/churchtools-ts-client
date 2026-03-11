@@ -1,6 +1,6 @@
 {
   "name": "@efsoest/churchtools-ts-client",
-  "version": "0.1.0-alpha",
+  "version": "0.1.0-beta",
   "description": "Type-safe ChurchTools API client",
   "author": "Ev. Freikirche Soest-Süd e.V. (https://github.com/efsoest/churchtools-ts-client)",
   "repository": {
