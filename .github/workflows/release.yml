@@ -1,34 +1,31 @@
 name: Release
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_tag:
-        description: 'Git tag to release (for example v0.1.0)'
-        required: true
-        type: string
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ inputs.release_tag }}
 
       - name: Validate tag format
         env:
-          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_TAG: ${{ github.ref_name }}
         run: test "${RELEASE_TAG#v}" != "${RELEASE_TAG}"
 
       - name: Verify ref is a git tag
-        run: git rev-parse --verify "refs/tags/${{ inputs.release_tag }}"
+        run: git rev-parse --verify "refs/tags/${{ github.ref_name }}"
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -38,7 +35,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           scope: '@efsoest'
 
@@ -46,7 +43,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Verify tag matches package version
-        run: test "v$(node -p "require('./package.json').version")" = "${{ inputs.release_tag }}"
+        run: test "v$(node -p "require('./package.json').version")" = "${{ github.ref_name }}"
 
       - name: Format check
         run: bun run format:check
