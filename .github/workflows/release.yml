@@ -40,6 +40,7 @@ jobs:
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
+          scope: '@efsoest'
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
