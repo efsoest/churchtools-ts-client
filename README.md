@@ -10,7 +10,7 @@ Dieses Repository trennt klar zwischen:
 - Core Layer (`src/core`): eigene Middleware und Laufzeitlogik
 - Client Layer (`src/client.ts`): öffentliche Facade
 
-Die verbindliche Ziel-Architektur und API-Oberflaeche ist in [ARCHITECTURE.md](./ARCHITECTURE.md) dokumentiert.
+Die verbindliche Ziel-Architektur und API-Oberfläche ist in [ARCHITECTURE.md](./ARCHITECTURE.md) dokumentiert.
 
 ## OpenAPI-Quelle (`swagger.json`)
 
@@ -52,7 +52,7 @@ Typischer Ablauf bei API- oder Core-Änderungen:
 # 1) OpenAPI generieren + postprocessen + generated typecheck
 bun run generate:all
 
-# 2) Handgeschriebenen Code pruefen
+# 2) Handgeschriebenen Code prüfen
 bun run format:check
 bun run typecheck
 bun run test
@@ -78,23 +78,23 @@ bun run build
 ## Release (Maintainer)
 
 - Der Release-Workflow liegt in `.github/workflows/release.yml`.
-- Trigger: manueller Start ueber GitHub Actions (`workflow_dispatch`) mit Input `release_tag` (z. B. `v0.1.0`).
+- Trigger: manueller Start über GitHub Actions (`workflow_dispatch`) mit Input `release_tag` (z. B. `v0.1.0`).
 - Schutz: Der Workflow checkt den angegebenen Tag aus und bricht ab, wenn Tag und `package.json`-Version nicht zusammenpassen.
 - Publishing: npm Trusted Publishing (OIDC), kein `NPM_TOKEN` im Repo notwendig.
 
-Einmaliges Setup fuer Trusted Publishing in npm:
+Einmaliges Setup für Trusted Publishing in npm:
 
-1. In npm die Package-Settings oeffnen (`churchtools-ts-client`).
-2. Unter Trusted Publishers einen GitHub-Publisher fuer dieses Repo und den Workflow `.github/workflows/release.yml` anlegen.
+1. In npm die Package-Settings öffnen (`churchtools-ts-client`).
+2. Unter Trusted Publishers einen GitHub-Publisher für dieses Repo und den Workflow `.github/workflows/release.yml` anlegen.
 3. Danach Release manuell starten und als `release_tag` den semver-Tag (`vX.Y.Z`) angeben.
 
 ## End-to-End Smoke-Test (manuell)
 
-Der Smoke-Test ist fuer reale Zielinstanzen gedacht und prueft reproduzierbar:
+Der Smoke-Test ist für reale Zielinstanzen gedacht und prüft reproduzierbar:
 
 - `whoami`-Bridge mit `login_token`
 - Session-/Cookie-Aufbau
-- `X-OnlyAuthenticated` fuer geschuetzte Requests
+- `X-OnlyAuthenticated` für geschützte Requests
 - CSRF-Injektion bei mutierendem Request
 
 Pflicht-Umgebungsvariablen:
@@ -117,14 +117,14 @@ CT_LOGIN_TOKEN="..." \
 bun run smoke:e2e
 ```
 
-Hinweis: Der mutierende Smoke-Request kann bewusst mit `4xx` antworten; fuer den
+Hinweis: Der mutierende Smoke-Request kann bewusst mit `4xx` antworten; für den
 Smoke-Test ist entscheidend, dass die Middleware-Pipeline (Cookie/CSRF/Auth)
 korrekt angewendet wurde.
 
 ## Generierungs-Pipeline im Detail
 
 1. `scripts/generate-api.ts` erzeugt den OpenAPI-Layer in `src/generated/openapi`.
-2. `scripts/postprocess-generated.ts` behebt bekannte Generator-Inkompatibilitaeten.
+2. `scripts/postprocess-generated.ts` behebt bekannte Generator-Inkompatibilitäten.
 
 ### Überblick: Was das Postprocessing macht
 
@@ -158,7 +158,7 @@ const client = new ChurchToolsClient({
 const personApi = client.api(PersonApi);
 ```
 
-Im Repo waehrend der Entwicklung kannst du alternativ direkt aus `src/` importieren.
+Im Repo während der Entwicklung kannst du alternativ direkt aus `src/` importieren.
 
 ### Fehlerbehandlung
 
@@ -222,14 +222,14 @@ const client = new ChurchToolsClient({
    Legacy: `setRateLimitTimeout(ms)`
    Neu: `new ChurchToolsClient({ ..., rateLimit: { baseDelayMs: ms } })`
 5. Request-Aufrufe
-   Legacy: proprietaere Helper wie `oldApi(module, func, params)`
+   Legacy: proprietäre Helper wie `oldApi(module, func, params)`
    Neu: generierte API-Klassen via `client.api(...)` und OpenAPI-Operations
 6. Fehlerverhalten
    Legacy: Axios-/Interceptor-Fehlerbilder
    Neu: klar typisierte Fehler (`ChurchToolsHttpError`, `ChurchToolsTimeoutError`, `ChurchToolsRequestError`)
 7. Middleware/Hooking
    Legacy: direkte Axios-Interceptors
-   Neu: Transport-Middleware ueber `ChurchToolsClientConfig.middleware`
+   Neu: Transport-Middleware über `ChurchToolsClientConfig.middleware`
 
 ## Referenz
 

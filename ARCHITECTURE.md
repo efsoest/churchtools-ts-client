@@ -1,16 +1,16 @@
-# Architektur und API-Oberflaeche
+# Architektur und API-Oberfläche
 
 Stand: 2026-02-10
 
-Dieses Dokument beschreibt die Ziel-Architektur und die oeffentliche API des
+Dieses Dokument beschreibt die Ziel-Architektur und die öffentliche API des
 Pakets `churchtools-ts-client` verbindlich.
 
 ## Architekturziele
 
 - Klare Trennung zwischen generiertem und handgeschriebenem Code.
-- Typsichere Nutzung der ChurchTools-OpenAPI ueber stabile Package-Entry-Points.
-- Runtime-unabhaengiger Transport mit kontrollierbarer Middleware-Pipeline.
-- Minimale externe Abhaengigkeiten im Laufzeitpfad.
+- Typsichere Nutzung der ChurchTools-OpenAPI über stabile Package-Entry-Points.
+- Runtime-unabhängiger Transport mit kontrollierbarer Middleware-Pipeline.
+- Minimale externe Abhängigkeiten im Laufzeitpfad.
 
 ## Layering
 
@@ -18,13 +18,13 @@ Pakets `churchtools-ts-client` verbindlich.
    - Komplett aus `swagger.json` erzeugt.
    - Wird nicht manuell editiert.
 2. Core Layer: `src/core`
-   - Enthaeit Transport, Fehler, Auth/Session, Cookies, CSRF, Rate-Limit.
+   - Enthält Transport, Fehler, Auth/Session, Cookies, CSRF, Rate-Limit.
    - Kapselt ChurchTools-spezifische Laufzeitlogik.
 3. Client Layer: `src/client.ts`
-   - Oeffentliche Facade (`ChurchToolsClient`) fuer Consumer.
+   - Öffentliche Facade (`ChurchToolsClient`) für Consumer.
    - Verbindet Generated APIs mit dem Core-Transport.
 
-## Oeffentliche Package-Oberflaeche
+## Öffentliche Package-Oberfläche
 
 ### Root-Entry (`churchtools-ts-client`)
 
@@ -42,7 +42,7 @@ Quelle: `src/index.ts`
 - Re-Export des OpenAPI-Runtime-Layers, API-Klassen und Models
 - Quelle: `src/generated/index.ts` -> `src/generated/openapi/index.ts`
 
-Hinweis: Dieser Entry ist fuer API-Operationen gedacht (z. B. `PersonApi`).
+Hinweis: Dieser Entry ist für API-Operationen gedacht (z. B. `PersonApi`).
 
 ## Request-Lebenszyklus
 
@@ -58,9 +58,9 @@ Danach erfolgt der eigentliche `fetch`-Call.
 
 ### Reihenfolge-Invariante
 
-Diese Reihenfolge ist absichtlich so gewaehlt:
+Diese Reihenfolge ist absichtlich so gewählt:
 
-- Auth zuerst, damit Session-Recovery frueh greift.
+- Auth zuerst, damit Session-Recovery früh greift.
 - Cookies vor CSRF, damit Token-Fetch bereits mit Session arbeitet.
 - CSRF vor Rate-Limit, damit retries denselben Request-Kontext erhalten.
 - Custom Middleware zuletzt, damit projektspezifisches Verhalten auf dem finalen
@@ -68,7 +68,7 @@ Diese Reihenfolge ist absichtlich so gewaehlt:
 
 ## Sicherheitsinvarianten
 
-- CSRF-Token werden nur fuer same-origin mutierende Requests injiziert.
+- CSRF-Token werden nur für same-origin mutierende Requests injiziert.
 - `credentials: 'omit'` verhindert Cookie-Injektion und Cookie-Persistierung.
 - Host-only Cookies bleiben host-only und werden nicht an Subdomains gesendet.
 - Session-Recovery auf `401` und auf ChurchTools-Sentinel
@@ -80,18 +80,18 @@ Diese Reihenfolge ist absichtlich so gewaehlt:
 - Timeout via AbortController -> `ChurchToolsTimeoutError`
 - Sonstige Transportfehler -> `ChurchToolsRequestError`
 - Session-Retry: maximal ein transparenter Retry pro Request
-- 429-Retry: konfigurierbar, standardmaessig ein Retry mit Backoff
+- 429-Retry: konfigurierbar, standardmäßig ein Retry mit Backoff
 
 ## Erweiterungsregeln
 
 - Generated Dateien nicht manuell patchen.
-- Generator-Inkompatibilitaeten nur in `scripts/postprocess-generated.ts` beheben.
+- Generator-Inkompatibilitäten nur in `scripts/postprocess-generated.ts` beheben.
 - Neue Laufzeitfeatures im Core Layer implementieren, nicht im Generated Layer.
-- API-Flaechen-Aenderungen nur ueber `src/index.ts` und `package.json`-Exports.
+- API-Flächen-Änderungen nur über `src/index.ts` und `package.json`-Exports.
 
-## Kompatibilitaetsregeln
+## Kompatibilitätsregeln
 
-- SemVer fuer oeffentliche Exports.
-- Breaking Changes nur ueber Major-Version.
-- Security-Fixes duerfen Verhalten absichern, solange API-Signaturen stabil
+- SemVer für öffentliche Exports.
+- Breaking Changes nur über Major-Version.
+- Security-Fixes dürfen Verhalten absichern, solange API-Signaturen stabil
   bleiben.
